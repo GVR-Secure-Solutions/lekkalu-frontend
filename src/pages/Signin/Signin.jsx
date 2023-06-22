@@ -1,4 +1,6 @@
-import React, {useContext} from "react";
+import React, { useContext, useState } from "react";
+import GoogleLogin from "react-google-login";
+import FacebookLogin from "react-facebook-login";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,9 +15,85 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Link as ReactRouterLink, useNavigate } from 'react-router-dom';
 import Copyright from "../../components/Copyright/Copyright";
+import AppleLogin from "react-apple-login";
+import axios from "axios";
 
+export const Signin = ({ Context }) => {
+    
+    const [accessToken, setAccessToken] = useState(null);
 
-export const Signin = ({Context}) => {
+  // Google Login Success
+  const responseGoogle = async (response) => {
+    try {
+      const res = await fetch("http://localhost:8000/api/google_login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          access_token: response.accessToken,
+        }),
+      });
+
+      const data = await res.json();
+      console.log(data);
+      setAccessToken(data.access_token);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // Google Login Error
+  const responseGoogleError = (error) => {
+    console.log(error);
+  };
+
+  // Facebook Login Success
+    const responseFacebook = async (response) => {
+        try {
+            const res = await fetch("http://localhost:8000/api/facebook_login/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    access_token: response.accessToken,
+                }),
+            });
+
+            const data = await res.json();
+            console.log(data);
+            setAccessToken(data.access_token);
+        } catch (err) {
+            console.log(err);
+        };
+    }
+    // Facebook Login Error
+  const responseFacebookError = (error) => {
+    console.log(error);
+    };
+    // Apple Login Success
+  const responseApple = async (response) => {
+    try {
+      const res = await axios.post("http://localhost:8000/rest-auth/apple_login/", {
+        id_token: response.authorization.id_token,
+      });
+
+      const data = res.data;
+      console.log(data);
+      setAccessToken(data.access_token);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // Apple Login Error
+  const responseAppleError = (error) => {
+    console.log(error);
+  };
+
+      
+
     const { fetchToken } = useContext(Context);
     const navigate = useNavigate();
 
@@ -85,6 +163,35 @@ export const Signin = ({Context}) => {
                         >
                             Sign In
                         </Button>
+
+                        <div>
+      <GoogleLogin
+        clientId="500430174142-l81aj9joeiookg94buo9jq0j7il8t2o3.apps.googleusercontent.com"
+        buttonText="Login with Google"
+        onSuccess={responseGoogle}
+        onFailure={responseGoogleError}
+        cookiePolicy={"single_host_origin"}
+      />
+
+      <FacebookLogin
+        appId="225440500220299"
+        fields="name,email,picture"
+        callback={responseFacebook}
+        onFailure={responseFacebookError}
+                            />
+                            
+    <AppleLogin
+        clientId="UN2XK86RAV"
+        redirectURI="your-redirect-uri"
+        onSuccess={responseApple}
+        onError={responseAppleError}
+        responseType="code id_token"
+      />
+
+      {accessToken && <p>Access Token: {accessToken}</p>}
+    </div>
+
+                                        
                         <Grid container>
                             <Grid item xs>
                                 <Link to={""} variant="body2">
