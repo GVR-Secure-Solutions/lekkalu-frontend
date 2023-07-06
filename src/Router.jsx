@@ -12,6 +12,7 @@ import Footer from "components/Footer/Footer";
 import Signin from "./pages/Signin/Signin";
 import Signup from "./pages/Signup/Signup";
 import PersistLogin from "components/PersistLogin/PersistLogin";
+import Goals from "components/Goals/Goals";
 
 const RouterComponent = () => {
   const { authToken } = useContext(Context);
@@ -83,6 +84,19 @@ const RouterComponent = () => {
                 <>
                   <Header />
                   <Expenses Context={Context} />
+                  <Footer />
+                  <SupportPopUp Context={Context} />
+                </>
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/goals"
+            element={
+              <ProtectedRoutes authToken={authToken}>
+                <>
+                  <Header />
+                  <Goals Context={Context}/>
                   <Footer />
                   <SupportPopUp Context={Context} />
                 </>

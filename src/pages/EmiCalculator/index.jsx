@@ -190,7 +190,7 @@ const EmiCalculator = () => {
         </div>
       </div>
 
-      <div className="table-container">
+      <div className="table-container mb-10">
         {results?.repayment_table && results.repayment_table.length > 0 && (
           <RepaymentTable repaymentTable={results.repayment_table} />
         )}
