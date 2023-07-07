@@ -22,19 +22,23 @@ const TagInput = ({myTags, setTags, Context, errorTag}) => {
         value={myTags || []}
         onChange={handleChange}
         getOptionLabel={handlerGetOptionLabel}
-        
         filterOptions={(options, params)=>{
 
             const filtered = filter(options, params);
 
-            const {inputValue} = params
-            const isExisting = options.some((option) => inputValue === option.name);
+            const { inputValue } = params
+            const getFirstUpperCase = () =>{
+              if(inputValue.length === 0)  return
+              return  inputValue.replace(inputValue[0], inputValue[0].toUpperCase())
+            }
+            const value = getFirstUpperCase()
+            
+            const isExisting = options.some((option) => value === option.name);
 
-            if (inputValue !== '' && !isExisting) {
+            if (value !== '' && !isExisting) {
               filtered.push({
                 name: inputValue.trim(),
               });
-
             }
             return filtered;
 

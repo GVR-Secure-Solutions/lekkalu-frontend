@@ -68,13 +68,16 @@ const ExpenseFormModal = ({
   }
 
   const loadTags = (arr) =>{
-    
+
     const promises = myTags.map(async (newTag) => {
         const exist = tags.some((tag) => tag.name === newTag.name);
         if (!exist) {
+
+          const newTagNameUpperCase = newTag.name.replace(newTag.name[0], newTag.name[0].toUpperCase())
+
           const newTagElement = {
             id: getNewId(),
-            name: newTag.name,
+            name: newTagNameUpperCase,
           };
           arr.push(newTagElement);
           tags.push(newTagElement);
