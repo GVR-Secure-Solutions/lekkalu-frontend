@@ -19,6 +19,8 @@ import ReactFileReader from "react-file-reader";
 import Swal from "sweetalert2";
 import ButtonExcel from "./components/ButtonExcel";
 import ModalExcelClosed from "./components/ModalExcelClosed";
+import { checkExpensesDoesNotRepeat } from "./utils";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
 
 const ExpenseFormModal = ({
   onAddExpense,
@@ -30,13 +32,16 @@ const ExpenseFormModal = ({
   loadExcelStatus,
   createExpenseExcelStatus,
   Context,
+  authToken
 }) => {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const [myTags, setMyTags] = useState([]);
   const [errorTag, setErrorTag] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [ defaultLoadStatus, setDefaultLoadStatus ] = useState(false)
   const { tags, createTag } = useContext(Context)
+  const axiosPrivate = useAxiosPrivate()
 
   useEffect(() => {
     if (expenseToEdit) {
@@ -113,6 +118,19 @@ const ExpenseFormModal = ({
     if (editIndex !== null) {
       onUpdateExpense(editIndex, { ...expenseToEdit, ...newExpense });
     } else {
+      setDefaultLoadStatus(true)
+      const exist = await checkExpensesDoesNotRepeat(newExpense, axiosPrivate, authToken)
+      if(exist){
+        handleClose()
+        Swal.fire({
+          title:'This expense has already been charged.',
+          background:'white',
+          icon:'warning',
+          timer:2000,
+          showConfirmButton:false,
+        }).then(()=>{handleClickOpen(); setDefaultLoadStatus(false)})
+        return
+      }
       onAddExpense({ ...newExpense });
     }
 
@@ -124,6 +142,7 @@ const ExpenseFormModal = ({
     })
     setAmount("");
     setMyTags("");
+    setDefaultLoadStatus(false)
     handleClose();
   };
 
@@ -198,7 +217,7 @@ const ExpenseFormModal = ({
                 <ButtonExcel loadExcelStatus={loadExcelStatus} />
               </ReactFileReader>
               <Button onClick={handleClose}>Cancel</Button>
-              <Button disabled={loadExcelStatus} type="submit" color="primary" data-testid="submit-expense">
+              <Button disabled={loadExcelStatus || defaultLoadStatus} type="submit" color="primary" data-testid="submit-expense">
                 {editIndex !== null ? "Update" : "Add"}
               </Button>
             </DialogActions>

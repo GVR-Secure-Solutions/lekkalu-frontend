@@ -6,6 +6,16 @@ import {mockState} from "__test__/data/Expenses";
 
 const TestContext = createContext(mockState);
 
+jest.mock('axios', () => ({
+  post: jest.fn(),
+  get: jest.fn(),
+  create:jest.fn(),
+}))
+jest.mock("hooks/useAxiosPrivate", () => jest.fn());
+jest.mock('components/Axios/Axios', () => ({
+    post: jest.fn(),
+}));
+
 window.scrollTo = jest.fn()
 
 describe("deleteExpenseRequest", () => {

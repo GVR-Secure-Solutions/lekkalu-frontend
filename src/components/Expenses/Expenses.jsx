@@ -21,6 +21,7 @@ const Expenses = ({ Context }) => {
     createExpenseRequest,
     changeExpenseRequest,
     fetchTags,
+    authToken
   } = useContext(Context);
   const [editIndex, setEditIndex] = useState(null);
   const [page, setPage] = useState(0);
@@ -137,7 +138,9 @@ const Expenses = ({ Context }) => {
         loadExcelStatus = {loadExcelStatus}
         handleFileUpload={handleFileUpload}
         createExpenseExcelStatus = {newData}
+        expenses = {expenses}
         Context={Context}
+        authToken = {authToken}
       />
       <Typography variant="h6">Expense List</Typography>
       <div style={{ display: 'flex', alignItems: 'center' }}>
