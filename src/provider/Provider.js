@@ -433,7 +433,7 @@ const Provider = ({ children }) => {
          handleErrors(error);
       }
    };
-
+   
    const signOut = () => {
       setAuthToken(null)
       deleteCookie('refresh')

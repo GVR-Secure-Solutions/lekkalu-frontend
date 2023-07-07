@@ -1,0 +1,40 @@
+.container{
+    width:100%;
+    height:13vw;
+    background:white;
+    border-radius:.8rem;
+}
+.containerTitle{
+    border-top-left-radius: .8rem;
+    border-top-right-radius: .8rem;
+    background-color: #9747FF;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 2.5vw;
+}.containerTitle > span{
+    color: white;
+}.containerTitle > button {
+    color:#2F00FF;
+    border: none;
+    background-color: transparent;
+    font-size: 1.5rem;
+    height:auto;
+}
+.containerLi{
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    height: 76%;
+}
+.containerLi > li{
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-bottom: 1px solid black;
+    padding-top:.2vw;
+    padding-bottom:.2vw;
+}

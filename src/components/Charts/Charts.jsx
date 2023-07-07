@@ -22,7 +22,7 @@ const Test = () => {
    }, []);
 
    return (
-      <div>
+      <div style={{display:'flex', flexDirection:'column', gap:'3vw', paddingTop:'3vw'}}>
          {/* {isError ? <h3>Error</h3> : null} */}
          {monthlyExpenses.length == 0 && weeklyExpense.length == 0 ? (
             <div

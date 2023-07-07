@@ -3,7 +3,7 @@
 exports[`Can create a test snapshot 1`] = `
 <div>
   <div
-    class="section-outer-wrapper col-md-8 mx-auto mb-5 mt-5"
+    class="section-outer-wrapper col-md-8 mx-auto"
     style="background-color: rgb(84, 89, 83);"
   >
     <h3

@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import { useLocation } from "react-router";
 import {
   Typography,
   TablePagination,
@@ -6,11 +7,18 @@ import {
 } from "@mui/material";
 import { SkipNext, SkipPrevious } from '@mui/icons-material';
 import ExpenseFormModal from "./ExpensesModal";
-import { ModalContainer, modalSuccesCreated } from "./styled";
+import { ModalContainer,
+        ContainerExpenses,
+        ContainerExpensesHeader,
+        ContainerCardsComponents,
+        ContainerWidgets,
+        ContainerExpensesData} from "./styled";
 import ExpensesList from "./ExpenseList";
 import { formatDate } from "./utils";
 import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
+import SingleCardExpenses from "./components/SingleCardExpenses";
+
 
 const Expenses = ({ Context }) => {
   const {
@@ -21,12 +29,15 @@ const Expenses = ({ Context }) => {
     createExpenseRequest,
     changeExpenseRequest,
     fetchTags,
+    budget
   } = useContext(Context);
+  const currentPath = useLocation().pathname.slice(1)
   const [editIndex, setEditIndex] = useState(null);
   const [page, setPage] = useState(0);
   const [ loadExcelStatus, setLoadExcelStatus ]  = useState(false)
   const [newData, setNewData ] = useState([])
   const rowsPerPage = 10;
+
 
   useEffect(() => {
     if (!tags.length) fetchTags();
@@ -55,8 +66,8 @@ const Expenses = ({ Context }) => {
         return foundTag ? foundTag.name : null;
       })
       .filter((tagName) => tagName !== null)
-      .join(', ');
-
+      .join(', #');
+     
     return tagNames
   };
 
@@ -126,81 +137,149 @@ const Expenses = ({ Context }) => {
     setPage(newPage);
   };
 
+
   return (
+    <div style={{ margin: "35px 0",
+    textAlign: "center",
+    display:'flex',
+    flexDirection:'column',
+    justifyContent:'center',
+    alignItems:'start',
+    gap:'2vw',
+    paddingLeft:'6.5vw',
+    paddingRight:'6.5vw',
+    }}>
+        <span style={{alignSelf:'start'}}>Home » {currentPath}</span>
     <ModalContainer>
-      <ExpenseFormModal
-        onAddExpense={createExpense}
-        onUpdateExpense={updateExpense}
-        expenseToEdit={returnExpenseToEdit()}
-        editIndex={editIndex}
-        onCancelEdit={() => setEditIndex(null)}
-        loadExcelStatus = {loadExcelStatus}
-        handleFileUpload={handleFileUpload}
-        createExpenseExcelStatus = {newData}
-        Context={Context}
-      />
-      <Typography variant="h6">Expense List</Typography>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <IconButton
-          onClick={() => {
-            setPage((prevPage) => Math.max(prevPage - 3, 0));
-          }}
-        >
-          <SkipPrevious />
-        </IconButton>
-        <TablePagination
-          component="div"
-          count={70}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[]}
-          labelDisplayedRows={() => ''}
-        />
-        <IconButton
-          onClick={() => {
-            setPage((prevPage) => Math.min(prevPage + 3, 6));
-          }}
-        >
-          <SkipNext />
-        </IconButton>
-        {page * 10 + 1} - {page * 10 + 10} of 70
-      </div>
-      <ExpensesList
-        expenses={expenses}
-        getTagNames={getTagNames}
-        setEditIndex={setEditIndex}
-        deleteExpense={deleteExpense}
-      />
-      {!!expenses.length &&
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <IconButton
-            onClick={() => {
-              setPage((prevPage) => Math.max(prevPage - 3, 0));
-            }}
-          >
-            <SkipPrevious />
-          </IconButton>
-          <TablePagination
-            component="div"
-            count={70}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={10}
-            rowsPerPageOptions={[]}
-            labelDisplayedRows={() => ''}
-          />
-          <IconButton
-            onClick={() => {
-              setPage((prevPage) => Math.min(prevPage + 3, 6));
-            }}
-          >
-            <SkipNext />
-          </IconButton>
-          {page * 10 + 1} - {page * 10 + 10} of 70
-        </div>
-      }
+    
+      {/* Modal */}
+     
+        <ContainerCardsComponents>
+            {/* card */}
+            <SingleCardExpenses budgets={budget} />
+
+        </ContainerCardsComponents>
+
+        <ContainerExpensesData>
+          <ContainerWidgets>
+                <div style={{
+                    width:'25vw',
+                    height:'15vw',
+                    background:'gray'
+                  }}>
+                    WIDGET EXAMPLE
+                </div>
+                <div style={{
+                    width:'25vw',
+                    height:'15vw',
+                    background:'gray'
+                  }}>
+                    WIDGET EXAMPLE
+                </div>
+                <div style={{
+                    width:'25vw',
+                    height:'15vw',
+                    background:'gray'
+                  }}>
+                    WIDGET EXAMPLE
+                </div>
+                <div style={{
+                    width:'25vw',
+                    height:'15vw',
+                    background:'gray'
+                  }}>
+                    WIDGET EXAMPLE
+                </div>
+            
+          </ContainerWidgets>
+
+          <ContainerExpenses>
+            
+            <ContainerExpensesHeader>
+              <Typography style={{fontSize:'1.2rem'}}>Expenses</Typography>
+
+              <ExpenseFormModal
+                onAddExpense={createExpense}
+                onUpdateExpense={updateExpense}
+                expenseToEdit={returnExpenseToEdit()}
+                editIndex={editIndex}
+                onCancelEdit={() => setEditIndex(null)}
+                loadExcelStatus = {loadExcelStatus}
+                handleFileUpload={handleFileUpload}
+                createExpenseExcelStatus = {newData}
+                Context={Context}
+              />
+            </ContainerExpensesHeader>
+            {/* Arrows fro change expense */}
+            {/* <div style={{ display: 'flex', alignItems: 'center' }}>
+              <IconButton
+                onClick={() => {
+                  setPage((prevPage) => Math.max(prevPage - 3, 0));
+                }}
+              >
+                <SkipPrevious />
+              </IconButton>
+              <TablePagination
+                component="div"
+                count={70}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                rowsPerPageOptions={[]}
+                labelDisplayedRows={() => ''}
+              />
+              <IconButton
+                onClick={() => {
+                  setPage((prevPage) => Math.min(prevPage + 3, 6));
+                }}
+              >
+                <SkipNext />
+              </IconButton>
+              {page * 10 + 1} - {page * 10 + 10} of 70
+            </div> */}
+
+            <ExpensesList
+              expenses={expenses}
+              getTagNames={getTagNames}
+              setEditIndex={setEditIndex}
+              deleteExpense={deleteExpense}
+            />
+            {/* Arrows for change the expenses view */}
+            {/* {!!expenses.length &&
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <IconButton
+                  onClick={() => {
+                    setPage((prevPage) => Math.max(prevPage - 3, 0));
+                  }}
+                >
+                  <SkipPrevious />
+                </IconButton>
+                <TablePagination
+                  component="div"
+                  count={70}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  rowsPerPage={10}
+                  rowsPerPageOptions={[]}
+                  labelDisplayedRows={() => ''}
+                />
+                <IconButton
+                  onClick={() => {
+                    setPage((prevPage) => Math.min(prevPage + 3, 6));
+                  }}
+                >
+                  <SkipNext />
+                </IconButton>
+                {page * 10 + 1} - {page * 10 + 10} of 70
+              </div>
+            } */}
+          </ContainerExpenses>
+          
+        </ContainerExpensesData>
+      
     </ModalContainer>
+    </div>
+
   );
 };
 

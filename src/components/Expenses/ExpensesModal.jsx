@@ -20,6 +20,7 @@ import Swal from "sweetalert2";
 import ButtonExcel from "./components/ButtonExcel";
 import ModalExcelClosed from "./components/ModalExcelClosed";
 
+
 const ExpenseFormModal = ({
   onAddExpense,
   onUpdateExpense,
@@ -149,12 +150,11 @@ const ExpenseFormModal = ({
     }
     <ModalContainer>
       <Button
-        variant="contained"
-        color="primary"
         onClick={handleClickOpen}
         data-testid="add-expense"
+        style={{fontSize:'1.4rem'}}
       >
-        Add Expense
+        +
       </Button>
       <Dialog open={open} onClose={()=>{
         handleClose()}}

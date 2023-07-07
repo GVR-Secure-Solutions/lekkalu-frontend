@@ -125,7 +125,7 @@ export const AssetsLiabilitiesChart = (props) => {
    return (
       <>
          {pieData && pieData.length !== 0 ? (
-            <div className='section-outer-wrapper col-md-8 mx-auto mb-5 mt-5'>
+            <div className='section-outer-wrapper col-md-8 mx-auto'>
                <ResponsiveContainer width={'100%'} height={300}>
                   <PieChart>
                      <defs>
