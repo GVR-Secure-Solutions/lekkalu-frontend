@@ -8,6 +8,7 @@ export const InitialState = {
    tags: [],
    assets: [],
    liabilities: [],
+   depreciation:[],
    incomeStatement: { income: [], expenses: [] }
 };
 
@@ -48,6 +49,12 @@ const Reducer = (state, action) => {
             ...state,
             liabilities: action.payload,
          };
+      }
+      case Types.FETCH_depreciation:{
+         return{
+            ...state,
+            depreciation:action.payload
+         }
       }
       case Types.DELETE_EXPENSE: {
          const newExpenses = state.expenses.filter(

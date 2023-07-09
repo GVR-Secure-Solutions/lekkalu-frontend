@@ -221,7 +221,7 @@ export const IncomeStatementChart = (props) => {
   return (
     <>
       {pieData && pieData.length !== 0 ? (
-        <div className="section-outer-wrapper col-md-9 mx-auto mb-5 mt-5">
+        <div className="section-outer-wrapper col-md-9 mx-auto">
           <ResponsiveContainer width="100%" aspect={size.width <= 1024 ? 2 : 3}>
             <PieChart>
               <defs>
