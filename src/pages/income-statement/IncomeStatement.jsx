@@ -1,19 +1,19 @@
-import React, { useContext, useEffect } from "react";
-import IncomeStatementSummary from "components/income-statement/summary/IncomeStatementSummary";
-import GenericTabs from "components/shared/tabs/Tabs";
+import React, { useContext, useEffect } from 'react';
+import IncomeStatementSummary from '../../components/income-statement/summary/IncomeStatementSummary';
+import GenericTabs from '../../components/shared/tabs/Tabs';
 // import { incomeStatement } from "constants/income-statement-test-dataset";
-import SummarizeIcon from "@mui/icons-material/Summarize";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import MoneyOffIcon from "@mui/icons-material/MoneyOff";
-import Income from "components/income-statement/income/Income";
-import { Expenses } from "components/income-statement/expenses/Expenses";
-import { BeatLoader } from "react-spinners";
-import Colors from "constants/colors";
+import SummarizeIcon from '@mui/icons-material/Summarize';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import MoneyOffIcon from '@mui/icons-material/MoneyOff';
+import Income from '../../components/income-statement/income/Income';
+import { Expenses } from '../../components/income-statement/expenses/Expenses';
+import { BeatLoader } from 'react-spinners';
+import Colors from '../../constants/colors';
 
 const tabsList = [
-  { label: "Summary", icon: <SummarizeIcon /> },
-  { label: "Income", icon: <MonetizationOnIcon /> },
-  { label: "Expenses", icon: <MoneyOffIcon /> },
+  { label: 'Summary', icon: <SummarizeIcon /> },
+  { label: 'Income', icon: <MonetizationOnIcon /> },
+  { label: 'Expenses', icon: <MoneyOffIcon /> },
 ];
 
 const IncomeStatement = ({ Context }) => {
@@ -62,12 +62,12 @@ const IncomeStatement = ({ Context }) => {
 
   const totalIncome = incomeStatement.income.reduce(
     (total, item) => total + item.value,
-    0
+    0,
   );
 
   const totalExpense = incomeStatement.expenses.reduce(
     (total, item) => total + item.value,
-    0
+    0,
   );
   const difference = totalIncome - totalExpense;
   return (
@@ -83,8 +83,8 @@ const IncomeStatement = ({ Context }) => {
           className="section col-md-8 mx-auto pb-5 pt-5 mt-5"
           style={{
             backgroundColor: Colors.graphBG,
-            display: "flex",
-            justifyContent: "center",
+            display: 'flex',
+            justifyContent: 'center',
           }}
         >
           <BeatLoader stylecolor={Colors.loaderColor} />

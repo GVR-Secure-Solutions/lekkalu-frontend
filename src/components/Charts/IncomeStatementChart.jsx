@@ -1,4 +1,4 @@
-import Colors from "constants/colors";
+import Colors from "../../constants/colors";
 import {
   PieChart,
   Pie,
@@ -10,7 +10,7 @@ import {
   Symbols,
 } from "recharts";
 import styles from "./IncomeStatementChart.module.css";
-import useWindowDimensions from "hooks/useWindowDimensions";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 export const IncomeStatementChart = (props) => {
   const size = useWindowDimensions();
   let totalValue = props.totalVal;

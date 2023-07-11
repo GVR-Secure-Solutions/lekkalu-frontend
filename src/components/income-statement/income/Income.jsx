@@ -1,5 +1,5 @@
-import { IncomeStatementChart } from "components/Charts/IncomeStatementChart";
-import Heading from "components/shared/heading/Heading";
+import { IncomeStatementChart } from "../../Charts/IncomeStatementChart";
+import Heading from "../../shared/heading/Heading";
 import React from "react";
 
 const Income = ({ incomeStatement, totalIncome }) => {
