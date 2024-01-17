@@ -31,6 +31,7 @@ import When from '@/components/When/When'
 import { CustomLabelPie } from '@/components/shared/CustomLabelPie/CustomLabelPie'
 import InputFieldsRenderer, { InputField } from '@/components/InputFieldsRenderer/InputFieldsRenderer'
 import Page from '@/components/Page/Page'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 type CagrValues = z.infer<typeof cagrCalculatorSchema>
 
@@ -56,6 +57,7 @@ export default function CAGRCalculator() {
   const form = useForm<CagrValues>({
     resolver: zodResolver(cagrCalculatorSchema),
     defaultValues: !isEmpty(parsedObject) ? parsedObject : DEFAULT_DATA,
+    mode: 'all',
   })
   const values = form.watch()
 
@@ -105,7 +107,12 @@ export default function CAGRCalculator() {
   }
 
   const result = useMemo(() => {
-    if (!values.durationOfInvestment || !values.finalValue || !values.initialValue) {
+    if (
+      !values.durationOfInvestment ||
+      !values.finalValue ||
+      !values.initialValue ||
+      Object.keys(form.formState.errors).length !== 0
+    ) {
       return undefined
     }
 
@@ -122,7 +129,7 @@ export default function CAGRCalculator() {
     ]
 
     return { summary, pieChartData, barChartData: summary.barChartData }
-  }, [values.durationOfInvestment, values.finalValue, values.initialValue])
+  }, [values.durationOfInvestment, values.finalValue, values.initialValue, form.formState.errors])
 
   const excelData = useMemo(() => {
     const data = {
@@ -209,13 +216,14 @@ export default function CAGRCalculator() {
             <div className='flex gap-2 border-b'>
               <div>You absolute returns: </div>
               <div className='font-medium'>
-                {result?.summary?.absoluteReturns} {preferences.currencyUnit}
+                {formatIndianMoneyNotation(parseFloat(result?.summary?.absoluteReturns || '0'))}{' '}
+                {preferences.currencyUnit}
               </div>
             </div>
             <div className='flex gap-2 border-b'>
               <div>You absolute CAGR: </div>
               <div className='font-medium'>
-                {result?.summary?.absoluteCAGR} {preferences.currencyUnit}
+                {formatIndianMoneyNotation(parseFloat(result?.summary?.absoluteCAGR || '0'))} {preferences.currencyUnit}
               </div>
             </div>
             <div className='flex gap-2 border-b'>

@@ -18,6 +18,7 @@ import { handleShare } from '@/utils/clipboard'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import InputFieldsRenderer, { InputField } from '@/components/InputFieldsRenderer/InputFieldsRenderer'
 import Page from '@/components/Page/Page'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 const DEFAULT_DATA = {
   monthlyAmount: 500,
@@ -43,6 +44,7 @@ export default function SIPCalculator() {
   const form = useForm<SipValues>({
     resolver: zodResolver(sipCalculatorSchema),
     defaultValues: !isEmpty(parsedObject) ? parsedObject : DEFAULT_DATA,
+    mode: 'all',
   })
   const values = form.watch()
 
@@ -86,7 +88,12 @@ export default function SIPCalculator() {
   ]
 
   const result = useMemo(() => {
-    if (!values.durationInvestment || !values.monthlyAmount || !values.rateReturn) {
+    if (
+      !values.durationInvestment ||
+      !values.monthlyAmount ||
+      !values.rateReturn ||
+      Object.keys(form.formState.errors).length !== 0
+    ) {
       return undefined
     }
 
@@ -97,7 +104,7 @@ export default function SIPCalculator() {
     ]
 
     return { summary, pieData }
-  }, [values.durationInvestment, values.monthlyAmount, values.rateReturn])
+  }, [values.durationInvestment, values.monthlyAmount, values.rateReturn, form.formState.errors])
 
   const handleCopy = () => {
     setIsCopied(true)
@@ -150,19 +157,19 @@ export default function SIPCalculator() {
                 <div className='flex gap-2 border-b'>
                   <div>Total invested: </div>
                   <div className='font-medium'>
-                    {result?.summary?.totalInvested} {preferences.currencyUnit}
+                    {formatIndianMoneyNotation(result?.summary?.totalInvested)} {preferences.currencyUnit}
                   </div>
                 </div>
                 <div className='flex gap-2 border-b'>
                   <div>Final value: </div>
                   <div className='font-medium'>
-                    {result?.summary?.finalValue} {preferences.currencyUnit}
+                    {formatIndianMoneyNotation(result?.summary?.finalValue)} {preferences.currencyUnit}
                   </div>
                 </div>
                 <div className='flex gap-2 border-b'>
                   <div>Wealth gained: </div>
                   <div className='font-medium'>
-                    {result?.summary?.wealthGained} {preferences.currencyUnit}
+                    {formatIndianMoneyNotation(result?.summary?.wealthGained)} {preferences.currencyUnit}
                   </div>
                 </div>
 

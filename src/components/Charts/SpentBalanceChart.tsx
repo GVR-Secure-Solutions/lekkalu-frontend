@@ -18,6 +18,7 @@ import dayjs from 'dayjs'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { EXPENSES } from '@/utils/query-keys'
 import { fetchMonthlyExpenses } from '@/queries/expense'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
   const { preferences } = useUserPreferences()
@@ -72,7 +73,7 @@ export const SpentBalanceChart = () => {
           <XAxis dataKey='month' dy={10} />
           <YAxis
             tickFormatter={(tick) => {
-              return `${preferences.currencyUnit} ${tick}`
+              return `${preferences.currencyUnit} ${formatIndianMoneyNotation(tick, 0)}`
             }}
           />
           <Tooltip content={<CustomTooltip />} />

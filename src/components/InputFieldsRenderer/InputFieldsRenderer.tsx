@@ -69,7 +69,7 @@ type Props = {
 }
 
 export default function InputFieldsRenderer({ inputs, control }: Props) {
-    const getFieldInput = useCallback((input: InputField, field: ControllerRenderProps<FieldValues, string>) => {
+  const getFieldInput = useCallback((input: InputField, field: ControllerRenderProps<FieldValues, string>) => {
     switch (input.type) {
       case 'number': {
         return (
@@ -84,7 +84,7 @@ export default function InputFieldsRenderer({ inputs, control }: Props) {
                   {...field}
                   className='!border-none !outline-none p-0 ring-0 focus-visible:ring-0 focus-visible:ring-offset-0'
                   onChange={(e) => {
-                    field.onChange(e.target?.valueAsNumber)
+                    field.onChange(isNaN(e.target?.valueAsNumber) ? 0 : e.target?.valueAsNumber)
                   }}
                 />
                 <Popover>
@@ -110,6 +110,7 @@ export default function InputFieldsRenderer({ inputs, control }: Props) {
             <When truthy={Boolean(input.hasRange)}>
               <Slider
                 defaultValue={[field.value]}
+                value={[Number(field.value) || 0]}
                 min={input?.range?.min}
                 max={input?.range?.max}
                 step={input?.range?.step}

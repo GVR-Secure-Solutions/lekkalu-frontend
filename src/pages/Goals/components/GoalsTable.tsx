@@ -9,6 +9,7 @@ import Pagination from '@/components/Pagination/Pagination'
 import AddOrEditGoal from './AddOrEditGoal'
 import { Button } from '@/components/ui/button'
 import DeleteGoal from './DeleteGoal'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 export default function GoalsTable() {
   const [page, setPage] = useState(0)
@@ -81,9 +82,9 @@ export default function GoalsTable() {
           {goals?.map((goal) => (
             <TableRow key={goal.id}>
               <TableCell>{goal.goal}</TableCell>
-              <TableCell>{goal.target_metric}</TableCell>
-              <TableCell>{goal.current_metric}</TableCell>
-              <TableCell>{goal.balance}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(parseFloat(goal.target_metric))}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(goal.current_metric)}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(goal.balance)}</TableCell>
               <TableCell>{goal.reachability_in_months}</TableCell>
               <TableCell>{goal.reachability_in_years}</TableCell>
               <TableCell>{goal.started}</TableCell>

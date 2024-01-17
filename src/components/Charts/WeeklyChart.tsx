@@ -6,6 +6,7 @@ import colors from 'tailwindcss/colors'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { EXPENSES } from '@/utils/query-keys'
 import { fetchWeeklyExpenses } from '@/queries/expense'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 export const WeeklyChart = () => {
   const { preferences } = useUserPreferences()
@@ -54,7 +55,7 @@ export const WeeklyChart = () => {
           />
           <YAxis
             tickFormatter={(tick) => {
-              return `${preferences.currencyUnit} ${tick}`
+              return `${preferences.currencyUnit} ${formatIndianMoneyNotation(tick, 0)}`
             }}
           />
           <CartesianGrid strokeDasharray='0 0' />

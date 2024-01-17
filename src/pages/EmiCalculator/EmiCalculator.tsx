@@ -8,6 +8,7 @@ import { useLocation } from 'react-router'
 import dayjs from 'dayjs'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
+import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { emiCalculatorSchema } from '@/schema/calculators'
 import { parseQueryString } from '@/utils/query-string'
 import { Form } from '@/components/ui/form'
@@ -18,6 +19,7 @@ import When from '@/components/When/When'
 // @ts-expect-error
 import { AssetsLiabilitiesChart } from '../../components/Charts/AssetsLiabilitiesChart'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 type EmiValues = z.infer<typeof emiCalculatorSchema>
 
@@ -29,12 +31,17 @@ const DEFAULT_DATA: EmiValues = {
   disbursementDate: new Date(),
 }
 
-const EmiHelpTexts: {[key: string]: string} = {
-  loanPrincipal: "This is the total amount of money you wish to borrow.It's the initial loan amount you receive. For example, if you want to borrow Rs 50,000 this is your loan principal.",
-  loanInterest: "The loan interest rate is the annual rate at which you are borrowing money. It's expressed as a percentage. For instance, if your loan carries an annual interest rate of 5%, you'd enter 5 as the interest rate.",
-  loanTenure: 'This field represents the total duration, provided in months, over which you will be repaying the loan. For example, if you plan to repay the loan in 3 years, which is 36 months, you would enter 36 months as the loan tenure.',
-  disbursementDate: "This is the date when you receive the loan amount. It's essential for calculating the exact interest applicable for each installment.",
-  emiDay: 'The EMI day is the day of each month on which you want to make your EMI payment. Different lenders may offer various options for selecting the EMI date.'
+const EmiHelpTexts: { [key: string]: string } = {
+  loanPrincipal:
+    "This is the total amount of money you wish to borrow.It's the initial loan amount you receive. For example, if you want to borrow Rs 50,000 this is your loan principal.",
+  loanInterest:
+    "The loan interest rate is the annual rate at which you are borrowing money. It's expressed as a percentage. For instance, if your loan carries an annual interest rate of 5%, you'd enter 5 as the interest rate.",
+  loanTenure:
+    'This field represents the total duration, provided in months, over which you will be repaying the loan. For example, if you plan to repay the loan in 3 years, which is 36 months, you would enter 36 months as the loan tenure.',
+  disbursementDate:
+    "This is the date when you receive the loan amount. It's essential for calculating the exact interest applicable for each installment.",
+  emiDay:
+    'The EMI day is the day of each month on which you want to make your EMI payment. Different lenders may offer various options for selecting the EMI date.',
 }
 
 // @TODO: add unit change options
@@ -44,15 +51,22 @@ const EmiCalculator = () => {
   const [isCopied, setIsCopied] = useState(false)
 
   const { toast } = useToast()
+  const { preferences } = useUserPreferences()
 
   const form = useForm<EmiValues>({
     resolver: zodResolver(emiCalculatorSchema),
     defaultValues: !isEmpty(parsedObject) ? parsedObject : DEFAULT_DATA,
+    mode: 'all',
   })
   const values = form.watch()
 
   const result = useMemo(() => {
-    if (!values.loanPrincipal || !values.loanInterest || !values.loanTenure) {
+    if (
+      !values.loanPrincipal ||
+      !values.loanInterest ||
+      !values.loanTenure ||
+      Object.keys(form.formState.errors).length !== 0
+    ) {
       return undefined
     }
 
@@ -61,7 +75,7 @@ const EmiCalculator = () => {
     const tenure = calculateTenureByUnit('Months', values.loanTenure)
 
     return { summary, assets, tenure }
-  }, [values.loanInterest, values.loanPrincipal, values.loanTenure])
+  }, [values.loanInterest, values.loanPrincipal, values.loanTenure, form.formState.errors])
 
   const inputs: Array<InputField> = [
     {
@@ -118,7 +132,7 @@ const EmiCalculator = () => {
 
   const handleCopy = () => {
     setIsCopied(true)
-    handleShare({ ...values, disbursementDate: dayjs(values.disbursementDate).unix() })
+    handleShare({ ...values, disbursementDate: dayjs(values.disbursementDate).unix() * 1000 })
     setTimeout(() => setIsCopied(false), 3000)
   }
 
@@ -126,7 +140,7 @@ const EmiCalculator = () => {
     const data = {
       loanEmi: result?.summary?.loan_emi,
       totalInterestPayable: result?.summary?.total_interest_payable,
-      totalPayment: result?.summary?.total_payment
+      totalPayment: result?.summary?.total_payment,
     }
     return [{ ...values, ...data }]
   }, [values, result])
@@ -173,15 +187,23 @@ const EmiCalculator = () => {
           <div className='flex items-center justify-center flex-col gap-4 text-center'>
             <div>
               <div>Loan EMI</div>
-              <div className='text-2xl font-medium'>{result?.summary?.loan_emi}</div>
+              <div className='text-2xl font-medium'>
+                {formatIndianMoneyNotation(parseFloat(result?.summary?.loan_emi as string))} {preferences.currencyUnit}
+              </div>
             </div>
             <div>
               <div>Total Interest Payable</div>
-              <div className='text-2xl font-medium'>{result?.summary?.total_interest_payable}</div>
+              <div className='text-2xl font-medium'>
+                {formatIndianMoneyNotation(parseFloat(result?.summary?.total_interest_payable as string))}{' '}
+                {preferences.currencyUnit}
+              </div>
             </div>
             <div>
               <div>Total Payment</div>
-              <div className='text-2xl font-medium'>{result?.summary?.total_payment}</div>
+              <div className='text-2xl font-medium'>
+                {formatIndianMoneyNotation(parseFloat(result?.summary?.total_payment as string))}{' '}
+                {preferences.currencyUnit}
+              </div>
             </div>
             <div>
               <Button onClick={handleExportToExcel}>Export to Excel</Button>
@@ -206,10 +228,10 @@ const EmiCalculator = () => {
           {result?.summary?.repayment_table.map((record) => (
             <TableRow key={record.month}>
               <TableCell>{Math.abs(record.month)}</TableCell>
-              <TableCell>{Math.abs(record.principal)}</TableCell>
-              <TableCell>{Math.abs(record.interest)}</TableCell>
-              <TableCell>{Math.abs(record.total_payment)}</TableCell>
-              <TableCell>{Math.abs(record.outstandingPrincipal)}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(Math.abs(record.principal))}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(Math.abs(record.interest))}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(Math.abs(record.total_payment))}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(Math.abs(record.outstandingPrincipal))}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -217,21 +239,37 @@ const EmiCalculator = () => {
       <div className='grid gap-4'>
         <h1 className='font-bold'>EMI Formula</h1>
         <p>The formula to calculate the Equated Monthly Installment (EMI) is as follows:</p>
-        <pre>
-          EMI = P * (r * (1 + r)^n) / ((1 + r)^n - 1)
-        </pre>
+        <pre>EMI = P * (r * (1 + r)^n) / ((1 + r)^n - 1)</pre>
         <p>Where:</p>
         <ul className='list-disc pl-8'>
-          <li><span className='font-bold'>EMI:</span> Equated Monthly Installment, the fixed amount you need to pay every month.</li>
-          <li><span className='font-bold'>P:</span> Loan Principal, the initial loan amount you receive.</li>
-          <li><span className='font-bold'>r:</span> Monthly interest rate, calculated from the Loan Interest Rate.</li>
-          <li><span className='font-bold'>n:</span> Total number of EMIs you need to pay over the Loan Tenure (in months).</li>
+          <li>
+            <span className='font-bold'>EMI:</span> Equated Monthly Installment, the fixed amount you need to pay every
+            month.
+          </li>
+          <li>
+            <span className='font-bold'>P:</span> Loan Principal, the initial loan amount you receive.
+          </li>
+          <li>
+            <span className='font-bold'>r:</span> Monthly interest rate, calculated from the Loan Interest Rate.
+          </li>
+          <li>
+            <span className='font-bold'>n:</span> Total number of EMIs you need to pay over the Loan Tenure (in months).
+          </li>
         </ul>
         <ul>
-          <li><span className='font-bold'>Total Interest Payable:</span>The total amount you pay in interest over the loan tenure.</li>
-          <li><span className='font-bold'>Total Payment:</span> The total amount you repay, including both the principal and interest.</li>
+          <li>
+            <span className='font-bold'>Total Interest Payable:</span>The total amount you pay in interest over the loan
+            tenure.
+          </li>
+          <li>
+            <span className='font-bold'>Total Payment:</span> The total amount you repay, including both the principal
+            and interest.
+          </li>
         </ul>
-        <p>The EMI formula helps you calculate the monthly repayment amount for a loan based on the principal, interest rate, and loan tenure.</p>
+        <p>
+          The EMI formula helps you calculate the monthly repayment amount for a loan based on the principal, interest
+          rate, and loan tenure.
+        </p>
       </div>
     </div>
   )

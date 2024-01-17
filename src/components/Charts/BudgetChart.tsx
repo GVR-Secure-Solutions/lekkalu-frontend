@@ -9,6 +9,7 @@ import { fetchMonthlyExpenses } from '@/queries/expense'
 import { BUDGET_QUERY_KEYS, EXPENSES } from '@/utils/query-keys'
 import { fetchBudgets } from '@/queries/budget'
 import { cn } from '@/utils/utils'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 const dropdownOptions = [
   {
@@ -27,8 +28,7 @@ const dropdownOptions = [
 
 function MonthlyProgressBar({ data }: any) {
   const { budget, month, spent, year } = data
-  const present = (spent / budget) * 100
-
+  const present = ((spent ?? 0) / (budget ?? 0)) * 100
   return (
     <div className='my-[16px] mx-[10px]'>
       <div className='flex justify-between items-center text-center gap-2'>
@@ -40,13 +40,13 @@ function MonthlyProgressBar({ data }: any) {
         </h6>
         <div className='flex-1'>
           <div className='flex justify-between items-center'>
-            <h6 className='text-xs font-medium uppercase text-gray-700'>spent {spent}</h6>
+            <h6 className='text-xs font-medium uppercase text-gray-700'>spent {formatIndianMoneyNotation(spent)}</h6>
             <h6
               className={`text-xs font-medium uppercase ${
                 present < 80 ? 'text-green-500' : present < 95 ? 'text-amber-500' : 'text-red-500'
               }`}
             >
-              {`left ${Number(budget) - Number(spent)}`}
+              {`left ${formatIndianMoneyNotation(Number(budget ?? 0) - Number(spent ?? 0))}`}
             </h6>
           </div>
           <div>

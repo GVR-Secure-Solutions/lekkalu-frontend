@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import When from '@/components/When/When'
 import { getErrorMessage } from '@/utils/utils'
 import { toast } from '@/components/ui/use-toast'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 dayjs.extend(customParseFormat)
 
@@ -61,7 +62,7 @@ export default function ViewAllBudgetModal() {
             {data?.map((budget) => (
               <TableRow key={budget.id}>
                 <TableCell>{dayjs(budget.month, 'YYYY-MM-DD').format('MMMM YYYY')}</TableCell>
-                <TableCell>{budget.limit}</TableCell>
+                <TableCell>{formatIndianMoneyNotation(parseFloat(budget.limit))}</TableCell>
                 <TableCell className='flex items-center gap-2'>
                   <Button loading={deleteBudgetMutation.isLoading} variant='ghost' size='sm'>
                     <TrashIcon

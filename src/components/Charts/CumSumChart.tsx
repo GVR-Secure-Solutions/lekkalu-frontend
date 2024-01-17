@@ -18,6 +18,7 @@ import colors from 'tailwindcss/colors'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { fetchMonthlyExpenses } from '@/queries/expense'
 import { EXPENSES } from '@/utils/query-keys'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
   const { preferences } = useUserPreferences()
@@ -72,7 +73,7 @@ export const CumSumChart = () => {
           <XAxis dataKey='month' dy={10} />
           <YAxis
             tickFormatter={(tick) => {
-              return `${preferences.currencyUnit} ${tick}`
+              return `${preferences.currencyUnit} ${formatIndianMoneyNotation(tick, 0)}`
             }}
           />
           <Tooltip content={<CustomTooltip />} />

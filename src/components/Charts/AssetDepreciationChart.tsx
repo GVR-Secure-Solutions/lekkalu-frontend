@@ -5,6 +5,7 @@ import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { BALANCE_SHEET } from '@/utils/query-keys'
 import { fetchPhysicalAssets } from '@/queries/balance-sheet'
 import { calculateDeprecationData } from '@/utils/balance-sheet'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 export default function AssetDepreciationChart() {
   const { data, isLoading } = useQuery([BALANCE_SHEET.ASSETS], fetchPhysicalAssets)
@@ -41,7 +42,7 @@ export default function AssetDepreciationChart() {
           <YAxis
             dataKey='value'
             tickFormatter={(tick) => {
-              return `${preferences.currencyUnit} ${tick}`
+              return `${preferences.currencyUnit} ${formatIndianMoneyNotation(tick, 0)}`
             }}
           />
           <Line dataKey='value' type='monotone' />

@@ -17,6 +17,7 @@ import ExpensesTable from './components/ExpensesTable'
 import ViewAllBudgetModal from './components/ViewAllBudgetModal'
 import SetBudgetModal from './components/SetBudgetModal'
 import Pagination from '@/components/Pagination/Pagination'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 dayjs.extend(customParseFormat)
 
@@ -54,7 +55,9 @@ export default function Expenses() {
         <div className='flex items-center gap-2'>
           <div>{dayjs().format('MMMM')}</div>
           <div className='font-bold'>
-            {currentMonthBudget ? `${currentMonthBudget.limit} ${preferences?.currencyUnit}` : 'Not budget set'}
+            {currentMonthBudget
+              ? `${formatIndianMoneyNotation(parseFloat(currentMonthBudget.limit))} ${preferences?.currencyUnit}`
+              : 'Not budget set'}
           </div>
         </div>
 

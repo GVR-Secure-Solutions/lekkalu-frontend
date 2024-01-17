@@ -10,6 +10,7 @@ import AddOrEditIncomeExpense from './AddOrEditIncomeExpense'
 import { Button } from '@/components/ui/button'
 import { AddIncomeStatementSchema } from '@/schema/income-statement'
 import DeleteIncomeStatement from './DeleteIncomeStatement'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 type TableType = 'EXPENSE' | 'INCOME'
 
@@ -64,7 +65,7 @@ export default function IncomeExpenseTable({
             <TableRow key={incomeStatement.id}>
               <TableCell>{incomeStatement.name}</TableCell>
               <TableCell>{incomeStatement.type}</TableCell>
-              <TableCell>{incomeStatement.amount}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(parseFloat(incomeStatement.amount))}</TableCell>
               <TableCell className='space-x-2'>
                 <AddOrEditIncomeExpense
                   trigger={

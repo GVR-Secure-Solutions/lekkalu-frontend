@@ -11,6 +11,7 @@ import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { Button } from '@/components/ui/button'
 import DeleteExpense from './DeleteExpense'
 import AddOrEditExpenseDialog from './AddOrEditExpenseDialog/AddOrEditExpenseDialog'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 type Props = {
   dateRangeEnabled: boolean
@@ -87,7 +88,7 @@ export default function ExpensesTable({ dateRangeEnabled, filters }: Props) {
         {expenses.map((expense) => (
           <TableRow key={expense.id}>
             <TableCell>
-              {expense.amount} {preferences.currencyUnit}
+              {formatIndianMoneyNotation(parseFloat(expense.amount))} {preferences.currencyUnit}
             </TableCell>
             <TableCell>{getTagNames(expense.tags)}</TableCell>
             <TableCell>{dayjs(expense.time).format('ddd MMM DD, YYYY')}</TableCell>

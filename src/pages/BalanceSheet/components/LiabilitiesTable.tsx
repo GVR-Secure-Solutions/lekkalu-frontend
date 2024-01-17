@@ -8,6 +8,7 @@ import AddOrEditLiabilityDialog from './AddOrEditLiabilityDialog'
 import { Button } from '@/components/ui/button'
 import When from '@/components/When/When'
 import DeleteLiabilityDialog from './DeleteLiabilityDialog'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 export default function LiabilitiesTable() {
   const { data, isFetching } = useQuery([BALANCE_SHEET.LIABILITIES], fetchLiabilities)
@@ -49,11 +50,11 @@ export default function LiabilitiesTable() {
           {data?.map((liability) => (
             <TableRow key={liability.id}>
               <TableCell>{liability.name}</TableCell>
-              <TableCell>{liability.balance}</TableCell>
-              <TableCell>{liability.principal}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(parseFloat(liability.balance))}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(parseFloat(liability.principal))}</TableCell>
               <TableCell>{liability.interest_rate}</TableCell>
               <TableCell>{liability.tenure}</TableCell>
-              <TableCell>{liability.closure_charges}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(parseFloat(liability.closure_charges))}</TableCell>
               <TableCell>{liability.disbursement_date}</TableCell>
               <TableCell className='space-x-2'>
                 <AddOrEditLiabilityDialog
