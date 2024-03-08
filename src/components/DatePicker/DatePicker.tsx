@@ -22,6 +22,10 @@ export default function DatePicker({ className, style, onChange, placeholder, va
   }, [value])
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
+
+  useEffect(() => {
+    setDate(value)
+  }, [value])
   return (
     <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
       <PopoverTrigger asChild>
