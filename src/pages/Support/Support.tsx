@@ -58,7 +58,7 @@ export default function Support() {
           <CardContent className='space-y-8'>
             <p className='max-w-xl text-center text-3xl font-medium'>We are here to help!</p>
             <div className='flex items-center space-x-2 w-full'>
-              <Input type='text' className='px-3 py-2 w-80' placeholder='Search for questions or topics...' />
+              <Input type='text' className='px-3 py-2 w-42 sm:w-60 md:w-80' placeholder='Search for questions or topics...' />
               <Button className='px-3 py-2'>Search</Button>
             </div>
           </CardContent>
