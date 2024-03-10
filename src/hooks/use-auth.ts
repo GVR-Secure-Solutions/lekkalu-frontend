@@ -14,10 +14,9 @@ export function useAuth() {
   const qc = useQueryClient()
   const { toast } = useToast()
   const navigate = useNavigate()
-  const { mutate: fetchUserData, data: userData } = useMutation(fetchUser, {})
+  const { mutate: fetchUserData, data: userData, isLoading: isAuthenticationInProgress } = useMutation(fetchUser, {})
 
   const {
-    isLoading: isAuthenticationInProgress,
     data: tokenData,
     remove: removeTokenData,
   } = useQuery([AUTH.LOGGED_IN], refreshToken, {
@@ -37,7 +36,6 @@ export function useAuth() {
       setCookie(COOKIE_CONSENT, 'accept', 30)
       /** updating the data in queryClient */
       qc.setQueryData([AUTH.LOGGED_IN], data)
-
       fetchUserData()
     },
     onError: (err) => toast(getErrorMessage(err)),
