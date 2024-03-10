@@ -69,6 +69,6 @@ export async function resendEmail(payload: EmailVerifyPayloadType) {
     'Content-Type': 'application/json',
   }
 
-  const { data } = await regsitrationClient.post<{ message: string }>('/users/dj-rest-auth/registration/resend-email/', payload, { headers })
+  const { data } = await registrationClient.post<{ message: string }>('/users/dj-rest-auth/registration/resend-email/', payload, { headers })
   return data
 }
