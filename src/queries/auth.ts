@@ -1,5 +1,5 @@
-import { LoginSchema, SignupSchema } from '@/schema/auth'
-import { googleClient, tokenClient, userClient } from '@/utils/client'
+import { EmailVerifyPayloadType, LoginSchema, SignupSchema } from '@/schema/auth'
+import { googleClient, regsitrationClient, tokenClient, userClient } from '@/utils/client'
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '@/utils/constants'
 import { getCookie } from '@/utils/cookie'
 import { User } from '@/types/user'
@@ -55,5 +55,20 @@ export async function deleteUserAccount() {
   }
 
   const { data } = await userClient.delete<{ message: string }>('/delete_user_account', { headers })
+  return data
+}
+
+export async function resendEmail(payload: EmailVerifyPayloadType) {
+  const token = getCookie(ACCESS_TOKEN_KEY)
+  if (!token) {
+    return
+  }
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  }
+
+  const { data } = await regsitrationClient.post<{ message: string }>('/users/dj-rest-auth/registration/resend-email/', payload, { headers })
   return data
 }

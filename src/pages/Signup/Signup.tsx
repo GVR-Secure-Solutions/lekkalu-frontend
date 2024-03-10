@@ -13,7 +13,7 @@ import Page from '@/components/Page/Page'
 import GoogleAuth from '@/components/SocialAuth/GoogleAuth'
 
 export default function Signup() {
-  const { tokenData, signupMutation } = useAuthContext()
+  const { tokenData, signupMutation, userData } = useAuthContext()
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') ?? '/dashboard'
 
@@ -32,7 +32,7 @@ export default function Signup() {
     signupMutation.mutate({ username: values.username, email: values.email, password: values.password })
   }
 
-  if (tokenData) {
+  if (tokenData && userData?.email_verified) {
     return <Navigate to={{ pathname: redirectTo }} replace />
   }
 

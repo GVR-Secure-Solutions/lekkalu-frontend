@@ -24,3 +24,8 @@ export const loginSchema = z.object({
   rememberMe: z.boolean().optional(),
 })
 export type LoginSchema = z.infer<typeof loginSchema>
+
+export const emailVerifyPayloadType = z.object({
+  email: z.string({ required_error: 'Email is required!' }).email('Invalid Email!'),
+})
+export type EmailVerifyPayloadType = z.infer<typeof emailVerifyPayloadType>
