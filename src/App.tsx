@@ -35,6 +35,7 @@ const Pricing = lazy(() => import('@/pages/Pricing/Pricing'))
 const NotFound = lazy(() => import('@/pages/NotFound/NotFound'))
 const Support = lazy(() => import('./pages/Support/Support'))
 const FeaturesDetails = lazy(() => import('./pages/Features/FeaturesDetails'))
+const EmailVerification = lazy(() => import('@/pages/EmailVerification/EmailVerification'))
 
 function App() {
   useEffect(() => {
@@ -96,6 +97,7 @@ function App() {
           <Route path='/pricing' element={<Pricing />} />
           <Route path='/support' element={<Support />} />
           <Route path='/feature/:toolName' element={<FeaturesDetails />} />
+          <Route path='/email-verification' element={<EmailVerification />} />
         </Route>
         <Route path='*' element={<NotFound />} />
       </Routes>
