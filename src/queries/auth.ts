@@ -1,5 +1,5 @@
 import { EmailVerifyPayloadType, LoginSchema, SignupSchema } from '@/schema/auth'
-import { googleClient, regsitrationClient, tokenClient, userClient } from '@/utils/client'
+import { googleClient, registrationClient, tokenClient, userClient } from '@/utils/client'
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '@/utils/constants'
 import { getCookie } from '@/utils/cookie'
 import { User } from '@/types/user'
