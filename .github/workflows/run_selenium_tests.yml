@@ -1,0 +1,48 @@
+on:
+  push:
+    branches:
+      - "master"  
+  pull_request:
+    branches:
+      - "master" 
+    paths:
+      - ".github/workflows/run_selenium_tests.yaml"
+
+jobs:
+  selenium-test:
+ 
+    runs-on: ubuntu-latest
+ 
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Check out lekkalu test
+      run: |
+        git clone https://github.com/SzatmariA/lekkalu-test-frontend.git
+    
+    - name: Set up python
+      uses: actions/setup-python@v4
+      with:
+         python-version: 'pypy3.9'
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - run: npm install
+    - run: npm run start:qa &
+
+
+    - name: Install dependencies
+      run: pip install -r selenium_tests/requirements.txt
+      working-directory: lekkalu-test-frontend
+       
+    - uses: browser-actions/setup-chrome@latest
+    - run: chrome --version
+
+    - name: Wait until the server is started (for 5 seconds) 
+      uses: jakejarvis/wait-action@master
+      with:
+        time: '5s'
+     
+    - run: python selenium_tests/main.py
+      working-directory: lekkalu-test-frontend
