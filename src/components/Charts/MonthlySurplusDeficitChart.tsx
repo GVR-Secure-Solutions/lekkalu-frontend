@@ -8,7 +8,7 @@ import { EXPENSES } from '@/utils/query-keys'
 import { fetchMonthlyExpenses } from '@/queries/expense'
 import { formatIndianMoneyNotation } from '@/utils/format-money'
 
-export const SpentBalanceChart = () => {
+export const MonthlySurplusDeficitChart = () => {
   const { data, isLoading } = useQuery([EXPENSES.MONTHLY_EXPENSES], fetchMonthlyExpenses)
 
   const { preferences } = useUserPreferences()
@@ -29,6 +29,7 @@ export const SpentBalanceChart = () => {
   if (isLoading) {
     return <div className='w-full animate-pulse bg-gray-300 h-96' />
   }
+
   const chartOptions: ApexCharts.ApexOptions = {
     chart: {
       height: 350,
@@ -52,15 +53,38 @@ export const SpentBalanceChart = () => {
         columnWidth: '60%',
       },
     },
-    colors: [colors.orange[500]],
+    colors: [colors.blue[500]],
     dataLabels: {
       enabled: false,
     },
     stroke: {
       curve: 'smooth',
     },
+    markers: {
+      size: 1,
+    },
     xaxis: {
       categories: monthlyData.map((item) => item.month.slice(0, 3)),
+      labels: {
+        formatter: (value) => value,
+      },
+    },
+    tooltip: {
+      enabled: true,
+      x: {
+        show: true,
+        formatter: (value, { series, dataPointIndex }) => {
+          return series[0][dataPointIndex] !== 0 ? value.toString() : 'Budget not set'
+        },
+      },
+      y: {
+        formatter: (value) => {
+          if (value !== 0) {
+            return `${preferences.currencyUnit} ${formatIndianMoneyNotation(value, 1)}`
+          }
+          return 'N/A'
+        },
+      },
     },
     yaxis: {
       labels: {
@@ -68,17 +92,18 @@ export const SpentBalanceChart = () => {
       },
     },
   }
+
   const chartSeries: ApexAxisChartSeries | ApexNonAxisChartSeries = [
     {
-      name: 'Spent',
+      name: 'Balance',
       type: 'bar',
-      data: monthlyData.map((item) => item.spent),
+      data: monthlyData.map(({ balance, budget }) => (budget === 0 ? 0 : balance)),
     },
   ]
 
   return (
     <div className='border p-4 w-full'>
-      <h3 className='text-lg text-center'>Monthly Spend</h3>
+      <h3 className='text-lg text-center'>Monthly Surplus Deficit</h3>
       <Chart options={chartOptions} series={chartSeries} type='bar' height={320} />
     </div>
   )

@@ -1,13 +1,14 @@
 import React, { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import colors from 'tailwindcss/colors'
+import Chart from 'react-apexcharts'
 import { BALANCE_SHEET } from '@/utils/query-keys'
 import { fetchLiabilities } from '@/queries/balance-sheet'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
+import { useUserPreferences } from '@/hooks/use-user-preferences'
 
 export default function LiabilityBarGraph() {
   const { data, isLoading } = useQuery([BALANCE_SHEET.LIABILITIES], fetchLiabilities)
-
+  const { preferences } = useUserPreferences()
   const liabilitiesData = useMemo(() => {
     if (!data) {
       return []
@@ -23,26 +24,51 @@ export default function LiabilityBarGraph() {
     return <div className='w-full h-96 bg-gray-200 animate-pulse' />
   }
 
-  return (
-    <ResponsiveContainer width='100%' className='!h-96'>
-      <BarChart
-        width={500}
-        height={300}
-        data={liabilitiesData}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray='3 3' />
-        <XAxis dataKey='name' />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey='balance' fill={colors.blue['500']} />
-      </BarChart>
-    </ResponsiveContainer>
-  )
+  const chartOptions: ApexCharts.ApexOptions = {
+    chart: {
+      height: 350,
+      type: 'bar',
+      dropShadow: {
+        enabled: true,
+        color: '#000',
+        top: 18,
+        left: 7,
+        blur: 10,
+        opacity: 0.2,
+      },
+      foreColor: '#000',
+      toolbar: {
+        show: true,
+      },
+    },
+    plotOptions: {
+      bar: {
+        borderRadius: 10,
+        columnWidth: '60%',
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      curve: 'smooth',
+    },
+    xaxis: {
+      categories: liabilitiesData.map((item) => item.name),
+    },
+    yaxis: {
+      labels: {
+        formatter: (value) => `${preferences.currencyUnit} ${formatIndianMoneyNotation(value, 1)}`,
+      },
+    },
+  }
+  const chartSeries: ApexAxisChartSeries | ApexNonAxisChartSeries = [
+    {
+      name: 'Balance',
+      type: 'bar',
+      data: liabilitiesData.map((item) => item.balance),
+    },
+  ]
+
+  return <Chart options={chartOptions} series={chartSeries} type='bar' height={320} />
 }

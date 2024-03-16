@@ -39,6 +39,7 @@
     "lucide-react": "^0.314.0",
     "polished": "^4.3.1",
     "react": "^18.2.0",
+    "react-apexcharts": "^1.4.1",
     "react-day-picker": "^8.10.0",
     "react-dom": "^18.2.0",
     "react-ga4": "^2.1.0",

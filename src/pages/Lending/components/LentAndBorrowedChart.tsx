@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react'
 import { useQueries } from '@tanstack/react-query'
-import { Cell, Legend, Pie, PieChart, PieLabelRenderProps, ResponsiveContainer, Tooltip, TooltipProps } from 'recharts'
+import Chart from 'react-apexcharts'
 import { cn } from '@/utils/utils'
 import { LENDING } from '@/utils/query-keys'
 import { fetchLendingAccounts, fetchLendingTransaction } from '@/queries/lending'
-import { PIE_CHART_COLORS, RADIAN } from '@/utils/constants'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { formatIndianMoneyNotation } from '@/utils/format-money'
 
@@ -27,46 +26,6 @@ export default function LentAndBorrowedChart({ className, style }: Props) {
     ],
   })
   const { preferences } = useUserPreferences()
-
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: PieLabelRenderProps) => {
-    const radius = (Number(innerRadius) ?? 0) + (Number(outerRadius ?? 0) - Number(innerRadius ?? 0)) * 0.7
-
-    const x = Number(cx ?? 0) + radius * Math.cos(-midAngle * RADIAN)
-    const y = Number(cy ?? 0) + radius * Math.sin(-midAngle * RADIAN)
-
-    if (!percent) {
-      return null
-    }
-
-    if (percent * 100 > 3) {
-      return (
-        <text x={x} y={y} fill='white' textAnchor='middle' dominantBaseline='central'>
-          {`${(percent * 100).toFixed(1)}%`}
-        </text>
-      )
-    }
-
-    return null
-  }
-
-  const CustomTooltip = ({ active, payload }: TooltipProps<number, number | string>) => {
-    const { preferences } = useUserPreferences()
-    const activePayload = payload?.[0]
-
-    if (active && activePayload) {
-      return (
-        <div className='bg-white p-2 rounded-md border'>
-          <label>
-            {`${activePayload.name} : ` + activePayload?.payload.percentage + '%'}
-            <br />
-            {`${preferences.currencyUnit} ${numDifferentiation(activePayload.value ?? 0)} `}
-          </label>
-        </div>
-      )
-    }
-
-    return null
-  }
 
   // Inside your component
   const chartData = useMemo(() => {
@@ -161,48 +120,54 @@ export default function LentAndBorrowedChart({ className, style }: Props) {
     )
   }
 
+  const chartOptionsLent: ApexCharts.ApexOptions = {
+    chart: {
+      width: 350,
+      type: 'donut',
+    },
+    labels: lentData?.map((ele) => `${ele.name} ${ele.percentage}%`),
+    legend: {
+      position: 'bottom',
+      fontSize: '16px',
+    },
+    fill: {
+      type: 'gradient',
+    },
+    tooltip: {
+      y: {
+        formatter: (value) => `${preferences.currencyUnit} ${formatIndianMoneyNotation(value)}`,
+      },
+    },
+  }
+  const chartSeriesLent: ApexAxisChartSeries | ApexNonAxisChartSeries = lentData?.map((ele) => ele.value)
+
+  const chartOptionsBorrowed: ApexCharts.ApexOptions = {
+    chart: {
+      width: 350,
+      type: 'donut',
+    },
+    labels: borrowedData?.map((ele) => `${ele.name} ${ele.percentage}%`),
+    fill: {
+      type: 'gradient',
+    },
+    legend: {
+      position: 'bottom',
+      fontSize: '16px',
+    },
+    tooltip: {
+      y: {
+        formatter: (value) => `${preferences.currencyUnit} ${formatIndianMoneyNotation(value)}`,
+      },
+    },
+  }
+  const chartSeriesBorrowed: ApexAxisChartSeries | ApexNonAxisChartSeries = borrowedData?.map((ele) => ele.value)
+
   return (
     <div className={cn('flex items-center justify-center flex-col md:flex-row gap-4 w-full', className)} style={style}>
       <div className='w-full flex items-center justify-center flex-col'>
         {lentData?.length > 0 && <div className='text-center'>Lent</div>}
         {lentData?.length > 0 ? (
-          <ResponsiveContainer width='100%' height={350}>
-            <PieChart>
-              <defs>
-                {lentData?.map((_, index) => (
-                  <linearGradient id={`myGradient${index}`} key={`myGradient${index}`}>
-                    <stop offset='0%' stopColor={PIE_CHART_COLORS[index % PIE_CHART_COLORS.length].start} />
-                    <stop offset='100%' stopColor={PIE_CHART_COLORS[index % PIE_CHART_COLORS.length].end} />
-                  </linearGradient>
-                ))}
-              </defs>
-              <Pie
-                data={lentData}
-                dataKey='value'
-                nameKey='name'
-                cx='50%'
-                cy='50%'
-                outerRadius={120}
-                label={renderCustomizedLabel}
-                labelLine={false}
-              >
-                {lentData?.map((_, index) => <Cell key={`cell-${index}`} fill={`url(#myGradient${index})`} />)}
-              </Pie>
-              <Tooltip content={<CustomTooltip />} />
-              <Legend
-                layout='horizontal'
-                verticalAlign='bottom'
-                payload={lentData?.map((item, index) => {
-                  return {
-                    id: item.name,
-                    type: 'circle',
-                    value: `${item.name} ${item.percentage} %`,
-                    color: `url(#myGradient${index})`,
-                  }
-                })}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+          <Chart options={chartOptionsLent} series={chartSeriesLent} type='donut' width={400} />
         ) : (
           <div>No Lent Data Available</div>
         )}
@@ -214,43 +179,7 @@ export default function LentAndBorrowedChart({ className, style }: Props) {
       <div className='w-full flex items-center justify-center flex-col'>
         {borrowedData?.length > 0 && <div className='text-center'>Borrowed</div>}
         {borrowedData?.length > 0 ? (
-          <ResponsiveContainer width='100%' height={350}>
-            <PieChart>
-              <defs>
-                {borrowedData?.map((_, index) => (
-                  <linearGradient id={`myGradient${index}`} key={`myGradient${index}`}>
-                    <stop offset='0%' stopColor={PIE_CHART_COLORS[index % PIE_CHART_COLORS.length].start} />
-                    <stop offset='100%' stopColor={PIE_CHART_COLORS[index % PIE_CHART_COLORS.length].end} />
-                  </linearGradient>
-                ))}
-              </defs>
-              <Pie
-                data={borrowedData}
-                dataKey='value'
-                nameKey='name'
-                cx='50%'
-                cy='50%'
-                outerRadius={120}
-                label={renderCustomizedLabel}
-                labelLine={false}
-              >
-                {borrowedData?.map((_, index) => <Cell key={`cell-${index}`} fill={`url(#myGradient${index})`} />)}
-              </Pie>
-              <Tooltip content={<CustomTooltip />} />
-              <Legend
-                layout='horizontal'
-                verticalAlign='bottom'
-                payload={borrowedData?.map((item, index) => {
-                  return {
-                    id: item.name,
-                    type: 'circle',
-                    value: `${item.name} ${item.percentage} %`,
-                    color: `url(#myGradient${index})`,
-                  }
-                })}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+          <Chart options={chartOptionsBorrowed} series={chartSeriesBorrowed} type='donut' width={400} />
         ) : (
           <div>No Borrowed Data Available</div>
         )}
@@ -261,20 +190,4 @@ export default function LentAndBorrowedChart({ className, style }: Props) {
       </div>
     </div>
   )
-}
-
-function numDifferentiation(value: number) {
-  let valueToReturn: string
-
-  if (value >= 10000000) {
-    valueToReturn = (value / 10000000).toFixed(2) + ' Cr'
-  } else if (value >= 100000) {
-    valueToReturn = (value / 100000).toFixed(2) + ' Lac'
-  } else if (value >= 1000) {
-    valueToReturn = (value / 1000).toFixed(2) + ' K'
-  } else {
-    valueToReturn = value.toFixed(2)
-  }
-
-  return valueToReturn
 }
