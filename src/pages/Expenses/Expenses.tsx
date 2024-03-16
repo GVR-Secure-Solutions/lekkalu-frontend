@@ -20,6 +20,7 @@ import Pagination from '@/components/Pagination/Pagination'
 import { WeeklyChart } from '@/components/Charts/WeeklyChart'
 import { SpentBalanceChart } from '@/components/Charts/SpentBalanceChart'
 import { CumSumChart } from '@/components/Charts/CumSumChart'
+import { MonthlySurplusDeficitChart } from '@/components/Charts/MonthlySurplusDeficitChart'
 
 dayjs.extend(customParseFormat)
 export type totalExpensesMetadataType =
@@ -69,8 +70,9 @@ export default function Expenses() {
     <div className='max-w-screen-xl mx-auto align-self-start min-h-[80vh] p-4 space-y-4'>
       <div className='grid md:grid-cols-2 gap-4'>
         <WeeklyChart />
-        <SpentBalanceChart />
         <CumSumChart />
+        <SpentBalanceChart />
+        <MonthlySurplusDeficitChart />
       </div>
 
       <div className='border rounded-2 shadow-sm w-100 p-4 flex flex-col gap-2 max-w-md'>
