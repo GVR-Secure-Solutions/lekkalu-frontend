@@ -45,10 +45,6 @@ export const Signin = () => {
     return <Navigate to={{ pathname: redirectTo }} replace />
   }
 
-  if (tokenData && !userData?.email_verified) {
-      return <Navigate to={{ pathname: '/email-verification' }} replace/>
-  }
-
   return (
     <div className='bg-primary'>
       <Page className='flex items-center justify-around h-screen'>

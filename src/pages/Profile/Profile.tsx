@@ -14,6 +14,7 @@ import { useAuthContext } from '@/hooks/use-auth'
 import { updateUserDetails } from '@/queries/user'
 import { getErrorMessage } from '@/utils/utils'
 import EmailVerification from '../EmailVerification/EmailVerification'
+import colors from 'tailwindcss/colors'
 
 type UserProfileSchema = z.infer<typeof userProfileSchema>
 type ChangePasswordSchema = z.infer<typeof changePasswordSchema>
