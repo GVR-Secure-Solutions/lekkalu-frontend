@@ -37,6 +37,7 @@ export function useAuth() {
       setCookie(COOKIE_CONSENT, 'accept', 30)
       /** updating the data in queryClient */
       qc.setQueryData([AUTH.LOGGED_IN], data)
+
       fetchUserData()
     },
     onError: (err) => toast(getErrorMessage(err)),
@@ -88,6 +89,7 @@ export function useAuth() {
         toast({
           title: 'Email is verified successfully!',
         })
+        fetchUserData();
       }
     },
     onError: (err: any) => toast(getErrorMessage(err)),

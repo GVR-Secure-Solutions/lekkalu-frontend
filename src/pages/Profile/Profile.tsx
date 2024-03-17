@@ -31,6 +31,7 @@ export default function Profile() {
   const userProfileForm = useForm<UserProfileSchema>({
     resolver: zodResolver(userProfileSchema),
     defaultValues: userData && userData,
+    defaultValues: userData && userData,
   })
 
   const passwordForm = useForm<ChangePasswordSchema>({
