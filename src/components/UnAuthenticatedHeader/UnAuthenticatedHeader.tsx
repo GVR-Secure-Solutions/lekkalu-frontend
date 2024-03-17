@@ -68,7 +68,7 @@ const ListItem = ({ title, href, ...restProps }: { title: string; href: string }
 ListItem.displayName = 'ListItem'
 
 export default function UnAuthenticatedHeader() {
-  const { tokenData, userData } = useAuthContext()
+  const { tokenData } = useAuthContext()
 
   return (
     <div className='w-full bg-primary h-16 text-white fixed top-0 left-0 z-50'>
@@ -113,26 +113,17 @@ export default function UnAuthenticatedHeader() {
         </div>
         <div className='block'>
           <When
-            truthy={Boolean(tokenData) && Boolean(userData?.email_verified)}
+            truthy={Boolean(tokenData)}
             fallback={
-              <When
-                truthy={Boolean(tokenData) && Boolean(!userData?.email_verified)}
-                fallback={
-                  <div className='space-x-2'>
-                    <Link to='/signin' className={cn(buttonVariants({ variant: 'outline' }), 'bg-transparent')}>
-                      Signin
-                    </Link>
-
-                    <Link to='/signup' className={cn(buttonVariants({ variant: 'secondary' }))}>
-                      Signup
-                    </Link>
-                  </div>
-                }
-              >
-                <Link to='/email-verification' className={cn(buttonVariants({ variant: 'secondary' }))} replace>
-                      Verify Email
+              <div className='space-x-2'>
+                <Link to='/signin' className={cn(buttonVariants({ variant: 'outline' }), 'bg-transparent')}>
+                  Signin
                 </Link>
-              </When>
+
+                <Link to='/signup' className={cn(buttonVariants({ variant: 'secondary' }))}>
+                  Signup
+                </Link>
+              </div>
             }
           >
             <Link to='/dashboard' className={cn(buttonVariants({ variant: 'secondary' }))}>

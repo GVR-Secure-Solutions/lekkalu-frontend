@@ -8,14 +8,16 @@ import { ACCESS_TOKEN_KEY, COOKIE_CONSENT, REFRESH_TOKEN_KEY } from '@/utils/con
 import { AUTH } from '@/utils/query-keys'
 import { useToast } from '@/components/ui/use-toast'
 import { getErrorMessage } from '@/utils/utils'
+import { clearData } from '@/utils/localstorage'
 
 export function useAuth() {
   const qc = useQueryClient()
   const { toast } = useToast()
   const navigate = useNavigate()
-  const { mutate: fetchUserData, data: userData, isLoading: isAuthenticationInProgress } = useMutation(fetchUser, {})
+  const { mutate: fetchUserData, data: userData } = useMutation(fetchUser, {})
 
   const {
+    isLoading: isAuthenticationInProgress,
     data: tokenData,
     remove: removeTokenData,
   } = useQuery([AUTH.LOGGED_IN], refreshToken, {
@@ -28,12 +30,14 @@ export function useAuth() {
 
   const loginMutation = useMutation(login, {
     onSuccess: (data) => {
+      toast({ title: 'Successfully logged in!' })
       /** Saving the tokens in cookies */
       setCookie(REFRESH_TOKEN_KEY, data.refresh, 30)
       setCookie(ACCESS_TOKEN_KEY, data.access, 30)
       setCookie(COOKIE_CONSENT, 'accept', 30)
       /** updating the data in queryClient */
       qc.setQueryData([AUTH.LOGGED_IN], data)
+
       fetchUserData()
     },
     onError: (err) => toast(getErrorMessage(err)),
@@ -85,6 +89,7 @@ export function useAuth() {
         toast({
           title: 'Email is verified successfully!',
         })
+        fetchUserData();
       }
     },
     onError: (err: any) => toast(getErrorMessage(err)),
@@ -94,6 +99,7 @@ export function useAuth() {
     deleteCookie(REFRESH_TOKEN_KEY)
     deleteCookie(ACCESS_TOKEN_KEY)
     removeTokenData()
+    clearData();
 
     navigate('/')
   }, [removeTokenData, navigate])
