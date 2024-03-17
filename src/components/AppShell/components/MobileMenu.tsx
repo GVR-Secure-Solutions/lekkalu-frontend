@@ -60,42 +60,27 @@ export default function MobileMenu({ isUnAuthenticatedHeader }: { isUnAuthentica
 
             {isUnAuthenticatedHeader ? (
               <When
-                truthy={Boolean(tokenData) && Boolean(userData?.email_verified)}
+                truthy={Boolean(tokenData)}
                 fallback={
-                  <When
-                    truthy={Boolean(tokenData) && Boolean(!userData?.email_verified)}
-                    fallback={
-                      <div className='space-x-2 flex w-full'>
-                        <Link
-                          to='/signin'
-                          className={cn(
-                            buttonVariants({ variant: 'outline' }),
-                            'border-1 border border-black/50',
-                            'w-full',
-                          )}
-                        >
-                          Signin
-                        </Link>
-
-                        <Link
-                          to='/signup'
-                          className={cn(
-                            buttonVariants({ variant: 'secondary' }),
-                            'w-full border-1 border border-black/50',
-                          )}
-                        >
-                          Signup
-                        </Link>
-                      </div>
-                    }
-                  >
+                  <div className='space-x-2 flex w-full'>
                     <Link
-                      to='/email-verification'
+                      to='/signin'
+                      className={cn(
+                        buttonVariants({ variant: 'outline' }),
+                        'border-1 border border-black/50',
+                        'w-full',
+                      )}
+                    >
+                      Signin
+                    </Link>
+
+                    <Link
+                      to='/signup'
                       className={cn(buttonVariants({ variant: 'secondary' }), 'w-full border-1 border border-black/50')}
                     >
-                      Verify Email
+                      Signup
                     </Link>
-                  </When>
+                  </div>
                 }
               >
                 <Link to='/dashboard' className={cn(buttonVariants({ variant: 'secondary' }), 'w-full')}>
