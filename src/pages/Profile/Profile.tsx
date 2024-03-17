@@ -68,14 +68,14 @@ export default function Profile() {
     <div className='max-w-screen-xl mx-auto align-self-start min-h-[80vh] p-4'>
       <div className='flex justify-between items-center'>
         <div className='text-lg font-bold'>Update your info</div>
-        <Button
+        {userData?.email_verified ? null : <Button
           variant={'outline'}
           onClick={() => {
             setIsEmailVerifiedDialogOpen(!isEmailVerifiedDialogOpen)
           }}
         >
           Verify Email
-        </Button>
+        </Button>}
       </div>
       <div className='w-full h-[1px] bg-gray-500/20 my-4' />
 
