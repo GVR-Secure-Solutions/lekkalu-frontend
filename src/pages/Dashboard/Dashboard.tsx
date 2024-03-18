@@ -8,7 +8,7 @@ import Page from '@/components/Page/Page'
 import BudgetChart from '@/components/Charts/BudgetChart'
 import EmailVerification from '../EmailVerification/EmailVerification'
 import { useAuthContext } from '@/hooks/use-auth'
-import { deleteData, getData, setData } from '@/utils/localstorage'
+import { deleteData, getData } from '@/utils/localstorage'
 import { REMIND_ME_LATER, VERIFICATION_REMIND_DATE } from '@/utils/constants'
 const Home = () => {
   const [isEmailVerifiedDialogOpen, setIsEmailVerifiedDialogOpen] = React.useState(false)
@@ -16,12 +16,11 @@ const Home = () => {
 
   useEffect(() => {
     if (userData) {
-      
       if (!userData?.email_verified) {
         const isRemind = getData(REMIND_ME_LATER)
 
         if (isRemind === null) {
-          setIsEmailVerifiedDialogOpen(true)          
+          setIsEmailVerifiedDialogOpen(true)
         }
 
         if (isRemind === 'true') {

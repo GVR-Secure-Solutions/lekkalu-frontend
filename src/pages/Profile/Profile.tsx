@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
+import colors from 'tailwindcss/colors'
 import { changePasswordSchema, userProfileSchema } from '../../schema/user'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -13,7 +14,6 @@ import { useAuthContext } from '@/hooks/use-auth'
 import { updateUserDetails } from '@/queries/user'
 import { getErrorMessage } from '@/utils/utils'
 import EmailVerification from '../EmailVerification/EmailVerification'
-import colors from 'tailwindcss/colors'
 
 type UserProfileSchema = z.infer<typeof userProfileSchema>
 type ChangePasswordSchema = z.infer<typeof changePasswordSchema>

@@ -89,7 +89,7 @@ export function useAuth() {
         toast({
           title: 'Email is verified successfully!',
         })
-        fetchUserData();
+        fetchUserData()
       }
     },
     onError: (err: any) => toast(getErrorMessage(err)),
@@ -99,7 +99,7 @@ export function useAuth() {
     deleteCookie(REFRESH_TOKEN_KEY)
     deleteCookie(ACCESS_TOKEN_KEY)
     removeTokenData()
-    clearData();
+    clearData()
 
     navigate('/')
   }, [removeTokenData, navigate])
