@@ -89,7 +89,7 @@ export function useAuth() {
         toast({
           title: 'Email is verified successfully!',
         })
-        fetchUserData();
+        fetchUserData()
       }
     },
     onError: (err: any) => toast(getErrorMessage(err)),
