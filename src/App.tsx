@@ -95,7 +95,7 @@ function App() {
           <Route path='/privacy-policies' element={<PrivacyPolicies />} />
           <Route path='/pricing' element={<Pricing />} />
           <Route path='/support' element={<Support />} />
-          <Route path='/feature/:toolName' element={<FeaturesDetails />} />          
+          <Route path='/feature/:toolName' element={<FeaturesDetails />} />
         </Route>
         <Route path='*' element={<NotFound />} />
       </Routes>
