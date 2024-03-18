@@ -48,7 +48,7 @@ export const EmailVerification = ({ isEmailVerifiedDialogOpen, setIsEmailVerifie
 
   return (
     <Dialog open={isEmailVerifiedDialogOpen} onOpenChange={setIsEmailVerifiedDialogOpen}>
-      <DialogContent className='m-4'>        
+      <DialogContent className='m-4'>
         <DialogHeader>
           <DialogTitle>Verify Email</DialogTitle>
         </DialogHeader>
