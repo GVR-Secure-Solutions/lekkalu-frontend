@@ -42,7 +42,7 @@
     "react-day-picker": "^8.10.0",
     "react-dom": "^18.2.0",
     "react-ga4": "^2.1.0",
-    "react-hook-form": "^7.48.2",
+    "react-hook-form": "^7.51.1",
     "react-router-dom": "^6.22.0",
     "react-scripts": "^5.0.1",
     "recharts": "^2.12.0",
