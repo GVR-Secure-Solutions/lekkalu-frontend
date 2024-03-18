@@ -15,7 +15,7 @@ import Page from '@/components/Page/Page'
 import GoogleAuth from '@/components/SocialAuth/GoogleAuth'
 
 export const Signin = () => {
-  const { tokenData, loginMutation, googleSignupMutation, userData } = useAuthContext()
+  const { tokenData, loginMutation, googleSignupMutation } = useAuthContext()
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') ?? '/dashboard'
   const authCode = searchParams.get('code')
