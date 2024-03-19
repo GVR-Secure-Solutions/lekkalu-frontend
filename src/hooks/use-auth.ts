@@ -69,32 +69,6 @@ export function useAuth() {
     onError: (err: any) => toast(getErrorMessage(err)),
   })
 
-  const resendEmailMutation = useMutation(resendEmail, {
-    onSuccess: () => {
-      toast({
-        title: 'Email send successfully!',
-      })
-    },
-    onError: (err: any) => toast(getErrorMessage(err)),
-  })
-
-  const verifyEmailMutation = useMutation(fetchUser, {
-    onSuccess: (data) => {
-      if (!data?.email_verified) {
-        toast({
-          title: 'Email is not verified yet!',
-          variant: 'destructive',
-        })
-      } else {
-        toast({
-          title: 'Email is verified successfully!',
-        })
-        fetchUserData()
-      }
-    },
-    onError: (err: any) => toast(getErrorMessage(err)),
-  })
-
   const logout = useCallback(() => {
     deleteCookie(REFRESH_TOKEN_KEY)
     deleteCookie(ACCESS_TOKEN_KEY)
@@ -113,8 +87,6 @@ export function useAuth() {
     userData,
     fetchUserData,
     googleSignupMutation,
-    resendEmailMutation,
-    verifyEmailMutation
   }
 }
 
