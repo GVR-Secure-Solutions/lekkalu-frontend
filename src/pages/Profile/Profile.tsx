@@ -66,17 +66,8 @@ export default function Profile() {
 
   return (
     <div className='max-w-screen-xl mx-auto align-self-start min-h-[80vh] p-4'>
-      <div className='flex justify-between items-center'>
-        <div className='text-lg font-bold'>Update your info</div>
-        {userData?.email_verified ? null : <Button
-          variant={'outline'}
-          onClick={() => {
-            setIsEmailVerifiedDialogOpen(!isEmailVerifiedDialogOpen)
-          }}
-        >
-          Verify Email
-        </Button>}
-      </div>
+      <div className='text-lg font-bold'>Update your info</div>
+
       <div className='w-full h-[1px] bg-gray-500/20 my-4' />
 
       <Form {...userProfileForm}>
@@ -121,17 +112,34 @@ export default function Profile() {
                   <div className='flex justify-between align-middle'>
                     <FormLabel>Email</FormLabel>
                     {userData?.email_verified ? (
-                      <FormLabel style={{ color: colors.green['500'] }}>
+                      <FormLabel style={{ color: colors.green['500'], paddingRight: '10px' }}>
                         {userData?.email_verified ? 'Verified' : 'Not Verified'}
                       </FormLabel>
                     ) : (
-                      <FormLabel style={{ color: colors.red['500'] }}>
+                      <FormLabel style={{ color: colors.red['500'], paddingRight: '10px' }}>
                         {userData?.email_verified ? 'Verified' : 'Not Verified'}
                       </FormLabel>
                     )}
                   </div>
                   <FormControl>
-                    <Input placeholder='Enter your email' {...field} />
+                    {userData?.email_verified ? (
+                      <Input placeholder='Enter your email' {...field} />
+                    ) : (
+                      <div className='relative flex items-center'>
+                        <Input placeholder='Enter your email' {...field} style={{ paddingRight: '100px' }} />
+                        {userData?.email_verified ? null : (
+                          <Button
+                            variant='link'
+                            type='button'
+                            className='absolute right-0 top-0'
+                            style={{ paddingLeft: '10px', paddingRight: '10px', zIndex: 1 }}
+                            onClick={() => setIsEmailVerifiedDialogOpen(true)}
+                          >
+                            Verify Email
+                          </Button>
+                        )}
+                      </div>
+                    )}
                   </FormControl>
                   <FormMessage />
                 </FormItem>

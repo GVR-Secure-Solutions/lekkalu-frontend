@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { useAuthContext } from '@/hooks/use-auth'
 import { useToast } from '@/components/ui/use-toast'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { getData, setData } from '@/utils/localstorage'
 import { REMIND_ME_LATER, VERIFICATION_REMIND_DATE } from '@/utils/constants'
+import { resendEmail } from '@/queries/auth'
+import { getErrorMessage } from '@/utils/utils'
 
 type Props = {
   isEmailVerifiedDialogOpen: boolean
@@ -12,7 +15,7 @@ type Props = {
 }
 
 export const EmailVerification = ({ isEmailVerifiedDialogOpen, setIsEmailVerifiedDialogOpen }: Props) => {
-  const { userData, resendEmailMutation, verifyEmailMutation } = useAuthContext()
+  const { userData } = useAuthContext()
   const { toast } = useToast()
 
   useEffect(() => {
@@ -25,6 +28,16 @@ export const EmailVerification = ({ isEmailVerifiedDialogOpen, setIsEmailVerifie
     }
   }, [isEmailVerifiedDialogOpen, userData])
 
+  const resendEmailMutation = useMutation(resendEmail, {
+    onSuccess: () => {
+      toast({
+        title: 'Email send successfully!',
+      })
+      setIsEmailVerifiedDialogOpen(false)
+    },
+    onError: (err: any) => toast(getErrorMessage(err)),
+  })
+
   const handleResendEmail = () => {
     if (userData) {
       resendEmailMutation.mutate({ email: userData.email })
@@ -34,9 +47,6 @@ export const EmailVerification = ({ isEmailVerifiedDialogOpen, setIsEmailVerifie
         description: 'Please sign in again!',
       })
     }
-  }
-  const handleEmailVerificationStatus = () => {
-    verifyEmailMutation.mutate()
   }
 
   const handleRemindMeLater = () => {
@@ -75,30 +85,11 @@ export const EmailVerification = ({ isEmailVerifiedDialogOpen, setIsEmailVerifie
         </div>
         <p className='text-center'>We sent a verification link to {userData?.email}. Please verify your email.</p>
 
-        <Button
-          variant='link'
-          onClick={() => {
-            handleResendEmail()
-          }}
-          loading={resendEmailMutation.isLoading}
-        >
-          Resend email
-        </Button>
-        {/* <div className='flex items-center space-x-2'>
-          <Checkbox id='rememberMe' />
-          <label
-            htmlFor='rememberMe'
-            className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-          >
-            Remind me later
-          </label>
-        </div> */}
-
         <div className='flex justify-center space-x-2'>
           <Button
             className='w-full'
             variant={'outline'}
-            loading={verifyEmailMutation.isLoading}
+            loading={resendEmailMutation.isLoading}
             onClick={() => {
               handleRemindMeLater()
             }}
@@ -108,9 +99,9 @@ export const EmailVerification = ({ isEmailVerifiedDialogOpen, setIsEmailVerifie
 
           <Button
             className='w-full'
-            loading={verifyEmailMutation.isLoading}
+            loading={resendEmailMutation.isLoading}
             onClick={() => {
-              handleEmailVerificationStatus()
+              handleResendEmail()
             }}
           >
             Verify
