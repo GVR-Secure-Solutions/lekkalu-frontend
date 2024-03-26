@@ -34,3 +34,5 @@ export const PIE_CHART_COLORS = [
   { start: '#aa076b', end: '#61045f' },
   { start: '#6aab9c', end: '#384e78' },
 ]
+export const REMIND_ME_LATER = 'remind-me-later'
+export const VERIFICATION_REMIND_DATE = 'on-reminde-verify-email'

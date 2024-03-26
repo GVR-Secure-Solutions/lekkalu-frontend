@@ -7,4 +7,5 @@ export type User = {
   preferred_currency: string
   profile: string
   username: string
+  email_verified: boolean
 }

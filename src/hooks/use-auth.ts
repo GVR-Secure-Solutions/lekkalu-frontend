@@ -8,13 +8,13 @@ import { ACCESS_TOKEN_KEY, COOKIE_CONSENT, REFRESH_TOKEN_KEY } from '@/utils/con
 import { AUTH } from '@/utils/query-keys'
 import { useToast } from '@/components/ui/use-toast'
 import { getErrorMessage } from '@/utils/utils'
+import { clearData } from '@/utils/localstorage'
 
 export function useAuth() {
   const qc = useQueryClient()
   const { toast } = useToast()
   const navigate = useNavigate()
-
-  const { mutate: fetchUserData, data: userData } = useMutation(fetchUser)
+  const { mutate: fetchUserData, data: userData } = useMutation(fetchUser, {})
 
   const {
     isLoading: isAuthenticationInProgress,
@@ -31,7 +31,6 @@ export function useAuth() {
   const loginMutation = useMutation(login, {
     onSuccess: (data) => {
       toast({ title: 'Successfully logged in!' })
-
       /** Saving the tokens in cookies */
       setCookie(REFRESH_TOKEN_KEY, data.refresh, 30)
       setCookie(ACCESS_TOKEN_KEY, data.access, 30)
@@ -74,6 +73,7 @@ export function useAuth() {
     deleteCookie(REFRESH_TOKEN_KEY)
     deleteCookie(ACCESS_TOKEN_KEY)
     removeTokenData()
+    clearData()
 
     navigate('/')
   }, [removeTokenData, navigate])
