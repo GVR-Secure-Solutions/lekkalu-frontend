@@ -72,3 +72,7 @@ export const getErrorMessage = (
     return { title: 'Unexpected error occurred', variant: 'destructive' }
   }
 }
+
+export function getPlural(number: number, unit: string) {
+  return number > 1 ? `${unit}s` : unit
+}

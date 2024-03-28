@@ -14,9 +14,21 @@ import {
   SheetIcon,
   TargetIcon,
   Wallet,
+  Scale,
+  BookCopy,
 } from 'lucide-react'
 
-type Route = { path: string; label: string; icon: React.ReactElement<{ className?: string }> }
+type SubRoute = {
+  path: string
+  label: string
+}
+
+type Route = {
+  path: string
+  label: string
+  icon: React.ReactElement<{ className?: string }>
+  subMenu?: Array<SubRoute>
+}
 
 export const ROUTES: Array<Route> = [
   {
@@ -53,6 +65,18 @@ export const ROUTES: Array<Route> = [
     path: '/settings',
     label: 'Settings',
     icon: <Settings2Icon />,
+  },
+  {
+    path: '/scenarios',
+    label: 'Scenarios',
+    icon: <BookCopy />,
+    subMenu: [],
+  },
+  {
+    path: '/comparisons',
+    label: 'Comparisons',
+    icon: <Scale />,
+    subMenu: [],
   },
 ]
 export const UN_AUTHENTICATED_ROUTES: Array<Route> = [
