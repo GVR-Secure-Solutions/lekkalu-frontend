@@ -24,7 +24,7 @@ export default function AuthProtection({ children }: Props) {
 
   if (tokenData) {
     return children
-  } else if (!tokenData && location.pathname.includes('comparisons')) {
+  } else if (!tokenData && (location.pathname.includes('comparisons') || location.pathname.includes('scenarios'))) {
     navigate(`/feature${location.pathname}`)
   } else {
     return <Navigate to={{ pathname: '/signin', search: `redirectTo=${location.pathname}` }} />

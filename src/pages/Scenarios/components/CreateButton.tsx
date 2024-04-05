@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { PlusIcon } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,7 @@ const CreateButton = ({ username }: { username: string }) => {
   const { data: imaginaryUser } = useQuery<any>([AUTH.IMAGINARY_CLIENT])
   const { getAPIClientForImaginaryUser } = useImaginaryAuth()
   const { userData } = useAuth()
-  const IS_AUTHENTICATED_USER = Boolean(userData?.first_name)
+  const IS_AUTHENTICATED_USER = useMemo(() => Boolean(userData), [userData])
   const apiClient = getAPIClientForImaginaryUser(imaginaryUser[username]?.access)
 
   async function createIncomeExpense(dto: AddIncomeStatementSchema) {

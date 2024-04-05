@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import ScenarioOption from './EachScenarioOptions'
 import { useAuth } from '@/hooks/use-auth'
 
@@ -12,7 +12,7 @@ type ScenarioType = {
 
 const Scenario = ({ name, id, handleRemoveScenario }: ScenarioType) => {
   const { userData } = useAuth()
-  const IS_AUTHENTICATED_USER = Boolean(userData?.first_name)
+  const IS_AUTHENTICATED_USER = useMemo(() => Boolean(userData), [userData])
   return (
     <div className='border p-5 rounded flex flex-col space-y-5 shadow hover:shadow-md'>
       <div className='ml-auto'>

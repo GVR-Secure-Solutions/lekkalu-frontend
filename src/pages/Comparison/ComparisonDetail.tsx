@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import Chart from 'react-apexcharts'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import dayjs from 'dayjs'
 import Page from '@/components/Page/Page'
 import PageTitle from './components/PageTitle'
 import Scenario from './components/Scenario/EachScenarioInComparison'
@@ -19,19 +18,19 @@ import { queryClient, tokenClient } from '@/utils/client'
 import { Button } from '@/components/ui/button'
 import { Goal, Timeline } from '@/types/goals'
 import { useImaginaryAuth } from '../Scenarios/context/use-imaginaryAuth'
-import { generateRandomColor, mergeArraysByDate } from './utils/dateTime'
 import { useAuth } from '@/hooks/use-auth'
+import { useUserPreferences } from '@/hooks/use-user-preferences'
+import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 const ComparisonDetail = () => {
   const comparisonId = useParams().id
   const IS_FOR_FEATURE_PAGE = useLocation().pathname.includes('feature')
   const { getAPIClientForImaginaryUser } = useImaginaryAuth()
   const { userData } = useAuth()
-  const IS_AUTHENTICATED_USER = Boolean(userData?.first_name)
-
+  const { preferences } = useUserPreferences()
+  const IS_AUTHENTICATED_USER = useMemo(() => Boolean(userData), [userData])
   const [selectedScenarios, setSelectedScenarios] = useState<Array<number>>([])
   const [timelineData, setTimelineData] = useState<any>()
-  const [calculatedTimelineDate, setCalculatedTimelineData] = useState<any>()
 
   const handleScenarioSelect = (id: number) => {
     const _selectedScenarios = [...selectedScenarios]
@@ -76,11 +75,7 @@ const ComparisonDetail = () => {
     return { [dto.scenarioName]: timelineData.data }
   }
 
-  const {
-    mutate: login,
-    isSuccess,
-    isLoading,
-  } = useMutation(
+  const { mutate: login, isLoading } = useMutation(
     async ({ password, username, scenarioName }: any) => {
       const results = await timelineDataAPICall({ password, username, scenarioName })
       return results
@@ -124,13 +119,6 @@ const ComparisonDetail = () => {
     scenarioMutationInComparison({ scenarios: remainingScenarios })
   }
 
-  useEffect(() => {
-    if (!isLoading && isSuccess) {
-      const result = mergeArraysByDate(timelineData)
-      setCalculatedTimelineData(result)
-    }
-  }, [isSuccess, isLoading])
-
   if (isFetchingComparison) {
     return (
       <Page>
@@ -146,6 +134,58 @@ const ComparisonDetail = () => {
       </Page>
     )
   }
+
+  const chartOptions: ApexCharts.ApexOptions = {
+    chart: {
+      height: 350,
+      type: 'line',
+      toolbar: {
+        show: false,
+      },
+      zoom: {
+        autoScaleYaxis: true,
+      },
+      foreColor: '#000',
+    },
+    stroke: {
+      curve: 'smooth',
+      width: 2,
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    xaxis: {
+      type: 'datetime',
+      labels: {
+        datetimeFormatter: {
+          year: 'yyyy',
+          month: "MMM 'yy",
+          day: 'MMM yyyy',
+          hour: 'HH:mm',
+        },
+      },
+    },
+    tooltip: {
+      x: {
+        format: 'dd MMM yyyy',
+      },
+    },
+    yaxis: {
+      labels: {
+        formatter: (value) => `${preferences.currencyUnit} ${formatIndianMoneyNotation(value, 1)}`,
+      },
+    },
+  }
+
+  const chartSeries: ApexAxisChartSeries =
+    timelineData &&
+    Object.keys(timelineData).map((scenarioName) => ({
+      name: scenarioName,
+      data: timelineData[scenarioName].map((dataItem: any) => ({
+        x: new Date(dataItem.time).getTime(),
+        y: dataItem.kpi_value,
+      })),
+    }))
 
   return (
     <Page className='space-y-8'>
@@ -221,49 +261,13 @@ const ComparisonDetail = () => {
 
       {timelineData ? (
         <div>
-          <Card className={cn('h-[600px] sm:h-96 pb-20 sm:pb-0 shadow-sm')}>
+          <Card className={cn('h-[600px] sm:h-[400px] pb-20 sm:pb-0 shadow-sm')}>
             <CardHeader className='flex flex-start flex-col sm:flex-row'>
               <CardTitle>Graph</CardTitle>
             </CardHeader>
             {
               <CardContent className='w-full h-full'>
-                {isLoading ? (
-                  <p>Loading...</p>
-                ) : (
-                  <ResponsiveContainer width='100%' height='75%'>
-                    <LineChart
-                      data={calculatedTimelineDate}
-                      width={730}
-                      height={250}
-                      margin={{ top: 5, right: 0, left: 10, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray='3 1' />
-                      <XAxis
-                        dataKey='time'
-                        tickFormatter={(date) => dayjs(date).format('MMM YYYY')}
-                        allowDataOverflow
-                      />
-                      <YAxis />
-                      <Tooltip labelFormatter={(date) => dayjs(date).format('DD MMM YYYY')} />
-
-                      {isSuccess ? (
-                        Object.keys(timelineData).map((each, index) => (
-                          <Line
-                            key={each}
-                            type='monotone'
-                            dataKey={each}
-                            name={each}
-                            stroke={generateRandomColor(index)}
-                            strokeWidth={1}
-                            dot={false}
-                          />
-                        ))
-                      ) : (
-                        <></>
-                      )}
-                    </LineChart>
-                  </ResponsiveContainer>
-                )}
+                {isLoading ? <p>Loading...</p> : <ChartWrapper chartOptions={chartOptions} chartSeries={chartSeries} />}
               </CardContent>
             }
           </Card>
@@ -273,6 +277,18 @@ const ComparisonDetail = () => {
       )}
     </Page>
   )
+}
+
+// ChartWrapper component with error handling
+const ChartWrapper: React.FC<{ chartOptions: ApexCharts.ApexOptions; chartSeries: ApexAxisChartSeries }> = ({
+  chartOptions,
+  chartSeries,
+}) => {
+  try {
+    return <Chart options={chartOptions} series={chartSeries} type='line' height={320} />
+  } catch (error) {
+    return <div>Sorry, there was an error rendering the chart.</div>
+  }
 }
 
 export default ComparisonDetail
