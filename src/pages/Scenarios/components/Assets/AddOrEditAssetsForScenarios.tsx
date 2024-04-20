@@ -22,7 +22,7 @@ import { CollapsibleTrigger, Collapsible, CollapsibleContent } from '@/component
 
 type Props = {
   trigger: React.ReactElement
-  asset?: PhysicalAsset
+  asset?: PhysicalAsset & { depreciation_percent_per_year?: string }
   editAsset: (id: number, dto: Partial<AddPhysicalAssetSchemaForScenario>) => Promise<PhysicalAsset[]>
   addAsset: (dto: AddPhysicalAssetSchemaForScenario) => Promise<PhysicalAsset[]>
 }
@@ -37,7 +37,7 @@ export default function AddOrEditAssetsForScenario({ trigger, asset, addAsset, e
   const qc = useQueryClient()
   const isEdit = Boolean(asset)
 
-  const form = useForm<AddPhysicalAssetSchemaForScenario>({
+  const form = useForm<AddPhysicalAssetSchemaForScenario & { depreciation_percent_per_year: number }>({
     resolver: zodResolver(addPhysicalAssetSchemaForScenario),
     defaultValues: {
       ...omit(asset, 'id'),
@@ -49,6 +49,7 @@ export default function AddOrEditAssetsForScenario({ trigger, asset, addAsset, e
       type: 1,
       user: user_id ?? -1,
       init_dep: asset?.depreciation_percent ? Number(asset?.depreciation_percent) : 1,
+      depreciation_percent: Math.abs(Number(asset?.depreciation_percent_per_year)) ?? 1,
     },
   })
 
@@ -73,12 +74,15 @@ export default function AddOrEditAssetsForScenario({ trigger, asset, addAsset, e
   })
 
   const handleAddOrEditPhysicalAsset = (values: AddPhysicalAssetSchemaForScenario) => {
-    const valuesToSubmit = {
+    const valuesToSubmit: any = {
       ...values,
       purchase_date: dayjs(values.purchase_date).format(SERVER_DATE_FORMAT),
       sell_date: dayjs(values.sell_date).format(SERVER_DATE_FORMAT),
+      depreciation_percent_per_year: -values.depreciation_percent,
       //   depreciation_frequency: monthsToSeconds(values.months) + yearsToSeconds(values.years),
     }
+
+    delete valuesToSubmit.depreciation_percent
 
     if (typeof asset !== 'undefined') {
       editPhysicalAssetMutation.mutate(valuesToSubmit)
