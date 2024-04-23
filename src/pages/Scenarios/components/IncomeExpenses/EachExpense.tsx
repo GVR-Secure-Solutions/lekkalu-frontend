@@ -3,15 +3,15 @@ import { MoreVerticalIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { IncomeStatement } from '@/types/income-statement'
-import { AddIncomeStatementSchema } from '@/schema/income-statement'
+import { AddIncomeStateSchemaForScenario } from '@/schema/income-statement'
 import AddOrEditIncomeExpenseForScenario from '.'
 import DeleteIncomeExpense from './DeleteIncomeExpense'
 import { formatIndianMoneyNotation } from '@/utils/format-money'
 
 type EachIncomeForScenarioType = {
   incomeExpense: IncomeStatement
-  createIncomeExpense: (dto: AddIncomeStatementSchema) => Promise<any>
-  updateIncomeExpense: (id: number, dto: Partial<AddIncomeStatementSchema>) => Promise<any>
+  createIncomeExpense: (dto: AddIncomeStateSchemaForScenario) => Promise<any>
+  updateIncomeExpense: (id: number, dto: Partial<AddIncomeStateSchemaForScenario>) => Promise<any>
   deleteIncomeExpense: (id: number) => Promise<any>
   IS_AUTHENTICATED_USER?: boolean
 }

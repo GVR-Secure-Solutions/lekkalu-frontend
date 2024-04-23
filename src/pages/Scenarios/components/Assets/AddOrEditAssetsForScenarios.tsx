@@ -22,7 +22,7 @@ import { CollapsibleTrigger, Collapsible, CollapsibleContent } from '@/component
 
 type Props = {
   trigger: React.ReactElement
-  asset?: PhysicalAsset & { depreciation_percent_per_year?: string }
+  asset?: PhysicalAsset & { depreciation_percent_per_year?: string; init_dep?: string }
   editAsset: (id: number, dto: Partial<AddPhysicalAssetSchemaForScenario>) => Promise<PhysicalAsset[]>
   addAsset: (dto: AddPhysicalAssetSchemaForScenario) => Promise<PhysicalAsset[]>
 }
@@ -48,8 +48,8 @@ export default function AddOrEditAssetsForScenario({ trigger, asset, addAsset, e
       tags: [],
       type: 1,
       user: user_id ?? -1,
-      init_dep: asset?.depreciation_percent ? Number(asset?.depreciation_percent) : 1,
-      depreciation_percent: Math.abs(Number(asset?.depreciation_percent_per_year)) ?? 1,
+      init_dep: asset?.depreciation_percent ? Math.abs(Number(asset?.init_dep)).toFixed(2) : '0',
+      depreciation_percent: Math.abs(Number(asset?.depreciation_percent_per_year)).toFixed(2),
     },
   })
 

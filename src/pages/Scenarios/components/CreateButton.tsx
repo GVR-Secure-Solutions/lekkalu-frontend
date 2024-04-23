@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import AddOrEditIncomeExpenseForScenario from './IncomeExpenses'
-import { AddIncomeStatementSchema } from '@/schema/income-statement'
+import { AddIncomeStateSchemaForScenario } from '@/schema/income-statement'
 import { useImaginaryAuth } from '../context/use-imaginaryAuth'
 import { AUTH, BALANCE_SHEET, INCOME_STATEMENT } from '@/utils/query-keys'
 import { IncomeStatement } from '@/types/income-statement'
@@ -24,12 +24,12 @@ const CreateButton = ({ username }: { username: string }) => {
   const IS_AUTHENTICATED_USER = Boolean(userData?.email)
   const apiClient = getAPIClientForImaginaryUser(imaginaryUser[username]?.access)
 
-  async function createIncomeExpense(dto: AddIncomeStatementSchema) {
+  async function createIncomeExpense(dto: AddIncomeStateSchemaForScenario) {
     const { data } = await apiClient.post('income_expense/', dto)
     return data
   }
 
-  async function updateIncomeExpense(id: number, dto: Partial<AddIncomeStatementSchema>) {
+  async function updateIncomeExpense(id: number, dto: Partial<AddIncomeStateSchemaForScenario>) {
     const { data } = await apiClient.put(`income_expense/${id}`, dto)
     return data
   }
