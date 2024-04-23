@@ -36,7 +36,7 @@ export default function AddOrEditLiabilityDialog({ trigger, liability, editLiabi
     defaultValues: {
       ...omit(liability, 'id'),
       // @ts-expect-error
-      disbursement_date: liability?.disbursement_date ? dayjs(liability?.disbursement_date).toDate() : dayjs(),
+      disbursement_date: liability?.disbursement_date ? dayjs(liability?.disbursement_date).toDate() : dayjs().toDate(),
       balance: liability?.balance ? parseFloat(liability?.balance).toFixed(2) : '0.00',
       emi_day: liability?.emi_day ? +liability?.emi_day : 1,
       emi: liability?.emi ? +liability?.emi : 0,
