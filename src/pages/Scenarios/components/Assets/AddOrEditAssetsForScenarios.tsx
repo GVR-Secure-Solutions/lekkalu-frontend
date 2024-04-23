@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import React, { cloneElement, useState } from 'react'
+import React, { cloneElement, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import dayjs from 'dayjs'
@@ -16,7 +15,6 @@ import { ASSET_INPUTS_FOR_SCENARIO, ASSET_INPUTS_FOR_SCENARIO_ADVANCE } from '@/
 import { SERVER_DATE_FORMAT } from '@/utils/constants'
 import { PhysicalAsset } from '@/types/balance-sheet'
 import { getErrorMessage } from '@/utils/utils'
-import { useAuthContext } from '@/hooks/use-auth'
 import { ImaginaryUser } from '../../context/use-imaginaryAuth'
 import { CollapsibleTrigger, Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 
@@ -28,7 +26,6 @@ type Props = {
 }
 
 export default function AddOrEditAssetsForScenario({ trigger, asset, addAsset, editAsset }: Props) {
-  const { userData } = useAuthContext()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { data: imag_users } = useQuery<ImaginaryUser>({ queryKey: [AUTH.IMAGINARY_CLIENT] })
   const { data: current_imag_user } = useQuery<string>({ queryKey: [AUTH.CURRENT_IMAGINARY_USER] })
@@ -62,6 +59,13 @@ export default function AddOrEditAssetsForScenario({ trigger, asset, addAsset, e
     },
     onError: (err) => toast(getErrorMessage(err)),
   })
+
+  useEffect(() => {
+    const sell_value: any = form.watch('sell_value')
+    if (isNaN(sell_value)) {
+      form.setValue('sell_value', 0.0)
+    }
+  }, [form.watch('sell_value')])
 
   const editPhysicalAssetMutation = useMutation({
     mutationFn: (dto: AddPhysicalAssetSchemaForScenario) => editAsset(asset?.id!, dto),
