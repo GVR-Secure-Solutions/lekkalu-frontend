@@ -88,3 +88,31 @@ html {
 #layout::-webkit-scrollbar {
   display: none;
 }
+.ripple{
+  height: 1px;
+  width: 1px;
+  position: absolute;
+  left: 50%;
+  bottom: 15px;
+  background-color: hsl(var(--primary));
+  border-radius: 50%;
+  transform: translate3d(-50%, 50%, 0);
+  animation-name: ripple;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-out;
+  will-change: transform, opacity;
+  animation-delay: 0;
+  z-index: -1;
+}
+
+@keyframes ripple{
+  0%{
+    transform: translate3d(-50%, 50%, 0) scale(0);
+    opacity: .33;
+  }
+  100%{
+    transform: translate3d(-50%, 50%, 0) scale(150);
+    opacity: 0;
+  }
+}

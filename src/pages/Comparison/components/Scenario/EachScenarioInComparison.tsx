@@ -16,7 +16,7 @@ const Scenario = ({ name, id, handleRemoveScenario }: ScenarioType) => {
   const { userData } = useAuth()
   const IS_AUTHENTICATED_USER = Boolean(userData?.email)
   return (
-    <div className='relative border shadow hover:shadow-md min-h-[130px] min-w-[230px]'>
+    <div className='relative border shadow hover:shadow-md min-h-[130px] min-w-[230px] bg-white'>
       {IS_AUTHENTICATED_USER ? (
         <div className='absolute right-2 ml-auto top-2'>
           <ScenarioOption id={id} handleRemoveScenario={handleRemoveScenario} />

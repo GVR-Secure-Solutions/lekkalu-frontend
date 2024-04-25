@@ -148,7 +148,7 @@ const ComparisonDetail = () => {
 
   return (
     <Page className='space-y-8'>
-      <div className='flex justify-between'>
+      <div className='relative flex justify-between'>
         {IS_AUTHENTICATED_USER ? (
           <PageTitle
             backUrl={IS_AUTHENTICATED_USER ? '/comparisons' : '/feature/comparisons'}
@@ -159,7 +159,7 @@ const ComparisonDetail = () => {
         ) : (
           <div />
         )}
-        <div>
+        <div className='fixed top-[75px] right-[20px] z-[20]'>
           <Button
             variant={'default'}
             onClick={handleSimulate}
@@ -168,6 +168,7 @@ const ComparisonDetail = () => {
           >
             Simulate
           </Button>
+          <div className={isLoading ? '' : 'ripple'} />
         </div>
       </div>
       <h2 className='font-bold'>
