@@ -168,7 +168,7 @@ const ComparisonDetail = () => {
           >
             Simulate
           </Button>
-          <div className={isLoading ? '' : 'ripple'} />
+          <div className={isPending ? '' : 'ripple'} />
         </div>
       </div>
       <h2 className='font-bold'>
@@ -217,6 +217,18 @@ const ComparisonDetail = () => {
         ) : (
           <></>
         )}
+      </div>
+
+      <div className='flex justify-end'>
+        <Button
+          variant={'default'}
+          onClick={handleSimulate}
+          loading={isPending}
+          disabled={!comparison?.scenarios_objects.length}
+        >
+          Simulate
+        </Button>
+        <div className={isPending ? '' : 'ripple'} />
       </div>
 
       {timelineData ? (
