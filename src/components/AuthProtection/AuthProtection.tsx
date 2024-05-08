@@ -11,6 +11,13 @@ export default function AuthProtection({ children }: Props) {
   const location = useLocation()
   const navigate = useNavigate()
 
+  const allowedPages = ['comparisons', 'scenarios']
+
+  const checkAllowedPages = (routeName: string) => {
+    const pagename = routeName.split('/')[1]
+    return allowedPages.includes(pagename)
+  }
+
   const { isAuthenticationInProgress, tokenData } = useAuthContext()
 
   if (isAuthenticationInProgress) {
@@ -24,7 +31,7 @@ export default function AuthProtection({ children }: Props) {
 
   if (tokenData) {
     return children
-  } else if (!tokenData && location.pathname.includes('comparisons')) {
+  } else if (!tokenData && checkAllowedPages(location.pathname)) {
     navigate(`/feature${location.pathname}`)
   } else {
     return <Navigate to={{ pathname: '/signin', search: `redirectTo=${location.pathname}` }} />
