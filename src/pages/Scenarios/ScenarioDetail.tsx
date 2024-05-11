@@ -30,7 +30,11 @@ export default function ScenarioDefault() {
 
   const scenarioId = Number(id)
   const { loginImaginaryUser } = useImaginaryAuth()
-  const { data, isLoading } = useQuery([`${SCENARIOS.SCENARIOS}-${scenarioId}`], () => fetchScenarioById(scenarioId), {
+  const {
+    data,
+    isLoading,
+    isError: errorForAuthorizedUser,
+  } = useQuery([`${SCENARIOS.SCENARIOS}-${scenarioId}`], () => fetchScenarioById(scenarioId), {
     onSuccess(data) {
       loginImaginaryUser.mutate({ username: data.imag_username, password: data.imag_password, id: data.id })
     },
@@ -63,6 +67,14 @@ export default function ScenarioDefault() {
   const isLoggedIn = Boolean(currentImaginaryUser && imaginaryUsers[currentImaginaryUser].access)
 
   if (IS_FOR_FEATURE_PAGE && isError) {
+    return (
+      <Page>
+        <h3>This scenario is set to private</h3>
+      </Page>
+    )
+  }
+
+  if (errorForAuthorizedUser) {
     return (
       <Page>
         <h3>This scenario is set to private</h3>
