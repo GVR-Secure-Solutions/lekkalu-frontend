@@ -34,8 +34,8 @@ export default function AppShell({ children }: Props) {
 
   return (
     <div className='h-screen grid grid-cols-12'>
-      <Sidebar className='hidden md:block md:col-span-2' />
-      <div className='relative col-span-12 md:col-span-10 overflow-y-auto'>
+      <Sidebar className='hidden md:block md:col-span-4 xl:col-span-2' />
+      <div className='relative col-span-12 md:col-span-8 xl:col-span-10 overflow-y-auto'>
         <div className='md:justify-end border-b sticky top-0 left-0 h-16 bg-white/50 backdrop-blur-lg w-full z-50 flex items-center justify-between px-4'>
           <div className='text-2xl font-bold md:hidden'>finuncle</div>
           <div className='capitalize text-[1] mr-auto max-md:hidden'>
