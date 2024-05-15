@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { PlusIcon } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import AddOrEditIncomeExpenseForScenario from './IncomeExpenses'
 import { AddIncomeStatementSchema } from '@/schema/income-statement'
 import { useImaginaryAuth } from '../context/use-imaginaryAuth'
-import { AUTH, BALANCE_SHEET, INCOME_STATEMENT } from '@/utils/query-keys'
+import { AUTH, BALANCE_SHEET, INCOME_STATEMENT, SCENARIOS } from '@/utils/query-keys'
 import { IncomeStatement } from '@/types/income-statement'
 import EachIncomeExpenseForScenario from './IncomeExpenses/EachExpense'
 import AddOrEditLiabilityDialog from './Liability/AddorEditLiabilityDialog'
@@ -16,6 +17,7 @@ import EachLiabilityForScenario from './Liability/EachLiabilityForScenario'
 import AddOrEditAssetsForScenario from './Assets/AddOrEditAssetsForScenarios'
 import EachAsset from './Assets/EachAsset'
 import { useAuth } from '@/hooks/use-auth'
+import { fetchScenarios } from '@/queries/scenarios'
 
 const CreateButton = ({ username }: { username: string }) => {
   const { data: imaginaryUser } = useQuery<any>([AUTH.IMAGINARY_CLIENT])
@@ -23,6 +25,14 @@ const CreateButton = ({ username }: { username: string }) => {
   const { userData } = useAuth()
   const IS_AUTHENTICATED_USER = Boolean(userData?.first_name)
   const apiClient = getAPIClientForImaginaryUser(imaginaryUser[username]?.access)
+
+  const { id: currentScenarioID } = useParams()
+
+  const { data: allScenarios } = useQuery([SCENARIOS.SCENARIOS], fetchScenarios, { enabled: IS_AUTHENTICATED_USER })
+
+  const IS_MY_SCENARIO = useMemo(() => {
+    return allScenarios?.some((each) => each.id === Number(currentScenarioID))
+  }, [allScenarios, currentScenarioID])
 
   async function createIncomeExpense(dto: AddIncomeStatementSchema) {
     const { data } = await apiClient.post('income_expense/', dto)
@@ -120,7 +130,7 @@ const CreateButton = ({ username }: { username: string }) => {
           IS_AUTHENTICATED_USER={IS_AUTHENTICATED_USER}
         />
       ))}
-      {IS_AUTHENTICATED_USER && (
+      {IS_AUTHENTICATED_USER && IS_MY_SCENARIO && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant={'ghost'} className='border border-dashed rounded-lg p-20'>
