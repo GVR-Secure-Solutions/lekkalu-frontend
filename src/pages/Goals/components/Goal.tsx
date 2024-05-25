@@ -40,7 +40,7 @@ export default function Goal({
   color,
   reachable_by_days,
 }: Props) {
-  const { data: progressQuery } = useQuery([`${GOALS.PROGRESS}_${id}`], () => getGoalProgress(id))
+  const { data: progressQuery } = useQuery([`${GOALS.PROGRESS}_${id}`], () => getGoalProgress(id), { suspense: true })
   const qc = useQueryClient()
   const [allowRename, setAllowRename] = useState(false)
   const [goalName, setGoalName] = useState(goalTitle)
