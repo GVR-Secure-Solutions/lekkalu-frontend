@@ -65,7 +65,7 @@ export const v1ApiClient = axios.create({
   headers: BASIC_HEADER,
 })
 v1ApiClient?.interceptors.request.use((config) => {
-  if (!config.headers.Authorization) {
+  if (!config.headers.Authorization && getCookie('access')) {
     config.headers.Authorization = `Bearer ${getCookie('access')}`
   }
 
