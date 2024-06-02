@@ -6,10 +6,12 @@ import { getCookie } from '@/utils/cookie'
 import { User } from '@/types/user'
 
 export async function signup(dto: Omit<SignupSchemaNew, 'termsAndConditions' | 'privacyPolicy'>) {
-  const { data } = await axios.create({
-    baseURL: process.env.REACT_APP_ACCOUNTS_BASE_URL,
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-  }).post<{ email: string; username: string }>('/dj-rest-auth/registration/', dto)
+  const { data } = await axios
+    .create({
+      baseURL: process.env.REACT_APP_ACCOUNTS_BASE_URL,
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    })
+    .post<{ email: string; username: string }>('/dj-rest-auth/registration/', dto)
   return data
 }
 
@@ -26,16 +28,32 @@ export async function login(dto: Omit<LoginSchema, 'rememberMe'>) {
   return data
 }
 
+export async function logout() {
+  const { data } = await axios
+    .create({
+      baseURL: process.env.REACT_APP_ACCOUNTS_BASE_URL,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getCookie('access')}`,
+      },
+    })
+    .post<{ email: string; username: string }>('/dj-rest-auth/logout/')
+  return data
+}
+
 export async function loginImaginaryUser(dto: Omit<LoginSchema, 'rememberMe'> & { id: number }) {
   const { data } = await tokenClient.post<{ access: string; refresh: string }>('/', dto)
   return { ...data, username: dto.username, id: dto.id }
 }
 
 export async function refreshToken() {
-  const { data } = await tokenClient.post<{ access: string; refresh: string }>('/refresh/', {
-    refresh: getCookie(REFRESH_TOKEN_KEY),
-  })
-  return data
+  if (getCookie(REFRESH_TOKEN_KEY)) {
+    const { data } = await tokenClient.post<{ access: string; refresh: string }>('/refresh/', {
+      refresh: getCookie(REFRESH_TOKEN_KEY),
+    })
+    return data
+  }
 }
 
 export async function fetchUser() {
