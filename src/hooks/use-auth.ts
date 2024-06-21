@@ -97,9 +97,9 @@ export function useAuth() {
 
   useEffect(() => {
     if (getCookie(ACCESS_TOKEN_KEY)) {
-      fetchUser()
+      fetchUserData()
     }
-  }, [])
+  }, [fetchUserData])
 
   return useMemo(
     () => ({
