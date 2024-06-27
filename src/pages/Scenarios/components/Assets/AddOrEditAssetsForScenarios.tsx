@@ -65,6 +65,7 @@ export default function AddOrEditAssetsForScenario({ trigger, asset, addAsset, e
     if (isNaN(sell_value)) {
       form.setValue('sell_value', 0.0)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.watch('sell_value')])
 
   const editPhysicalAssetMutation = useMutation({
