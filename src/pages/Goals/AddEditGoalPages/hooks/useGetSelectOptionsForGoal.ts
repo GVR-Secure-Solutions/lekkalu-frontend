@@ -27,11 +27,14 @@ const useGetSelectOptionsForGoal = () => {
     }
   }, [hasFetchedGoalProportionality, hasFetchedIncomeExpenses, hasFetchedTargetKpi])
 
+  const totalExpenses = incomeExpenses?.reduce((acc, curr) => (acc += Number(curr.amount)), 0)
+
   return {
     incomeExpenses,
     goalProportionality,
     getTargetKpi,
     isFetchingOptions,
+    totalExpenses,
   }
 }
 

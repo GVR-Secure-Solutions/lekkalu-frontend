@@ -26,6 +26,7 @@ type Props = {
   createdAt: string
   color: string
   reachable_by_days: number
+  goal: GoalType
 }
 
 const circleSize = 160
@@ -38,6 +39,7 @@ export default function Goal({
   category,
   createdAt,
   color,
+  goal,
   reachable_by_days,
 }: Props) {
   const { data: progressQuery } = useQuery({
@@ -132,7 +134,7 @@ export default function Goal({
       className={cn('flex flex-col border-t-4 rounded-lg p-4 shadow-md hover:cursor-pointer', className)}
       style={{ ...style, borderColor: color }}
     >
-      <GoalOptions id={id} handleAllowRename={handleAllowRename} />
+      <GoalOptions id={id} handleAllowRename={handleAllowRename} goal={goal} />
       <Link
         title='Click to view detail'
         to={!allowRename ? `/goals/${id}` : ''}

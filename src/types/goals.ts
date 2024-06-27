@@ -8,7 +8,7 @@ export type Goal = {
   track_kpi: string
   created_at: string
   updated_at: string
-  target_contribution_source: number
+  target_contribution_source: number | null
   target_date: string
   met: boolean
 }

@@ -1,18 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import colors from 'tailwindcss/colors'
-import { Link } from 'react-router-dom'
-import { PlusIcon } from 'lucide-react'
 import dayjs from 'dayjs'
 import { useQuery } from '@tanstack/react-query'
 import { range } from 'lodash'
 import Page from '@/components/Page/Page'
 import ProgressChart from '@/components/ProgressChart/ProgressChart'
-import { buttonVariants } from '@/components/ui/button'
 import Goal from './components/Goal'
 import { GOALS } from '@/utils/query-keys'
 import { fetchGoals } from '@/queries/goals'
 import { Skeleton } from '@/components/ui/skeleton'
 import { GoalStatus } from '@/types/goals'
+import { AddGoalDialog } from './components/AddGoalDialog'
 
 const TODAY = new Date()
 
@@ -24,7 +22,7 @@ const INITIAL_GOAL_STATUS: GoalStatus = {
 }
 
 export default function Goals() {
-  const { data, isLoading, isFetching } = useQuery({ queryKey: [GOALS.GOALS], queryFn: fetchGoals })
+  const { data, isLoading, isFetching } = useQuery({ queryKey: [GOALS.GOALS], queryFn: fetchGoals, staleTime: 0 })
   const [goalStatus, setGoalStatus] = useState<GoalStatus>(INITIAL_GOAL_STATUS)
 
   useEffect(() => {
@@ -67,13 +65,6 @@ export default function Goals() {
 
   return (
     <Page className='space-y-4'>
-      <div className='flex justify-end'>
-        <Link to='/goals/new' className={buttonVariants({ variant: 'default' })}>
-          <PlusIcon className='w-4 h-4 mr-2' />
-          <span>Add Goal</span>
-        </Link>
-      </div>
-
       <div className='grid sm:grid-cols-2 md:grid-cols-3 gap-4'>
         <ProgressChart
           title='On Track'
@@ -95,6 +86,10 @@ export default function Goals() {
         />
       </div>
 
+      <div className='flex justify-end'>
+        <AddGoalDialog />
+      </div>
+
       <div className='text-2xl font-bold truncate block py-4'>Your ongoing financial goals</div>
 
       {isFetching ? (
@@ -110,6 +105,7 @@ export default function Goals() {
               <Goal
                 key={goal.id}
                 id={goal.id}
+                goal={goal}
                 goalTitle={goal.name}
                 category={goal.track_kpi}
                 createdAt={dayjs(goal.created_at).toISOString()}
@@ -119,10 +115,7 @@ export default function Goals() {
             ))
           ) : (
             <div>
-              <p>You Have no financial goals.</p>
-              <Link to='/goals/new' className='block underline mt-2'>
-                Click here to add.
-              </Link>{' '}
+              <p>You have no financial goals.</p>
             </div>
           )}
         </div>
