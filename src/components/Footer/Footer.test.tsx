@@ -40,5 +40,9 @@ describe('CalculatorLink', () => {
     const sipCalculatorLink = screen.getByRole('link', { name: 'SIP Calculator' })
     expect(sipCalculatorLink).toBeInTheDocument()
     expect(sipCalculatorLink.getAttribute('href')).toBe('/sip-calculator')
+
+    const xirrCalculatorLink = screen.getByRole('link', { name: 'XIRR Calculator' })
+    expect(xirrCalculatorLink).toBeInTheDocument()
+    expect(xirrCalculatorLink.getAttribute('href')).toBe('/xirr-calculator')
   })
 })

@@ -67,6 +67,10 @@ describe('CALCULATOR_ROUTES', () => {
     const cagrCalculatorRoute = CALCULATORS_FEATURES.find((route) => route.href === '/cagr-calculator')
     expect(cagrCalculatorRoute).toBeTruthy()
     expect(cagrCalculatorRoute!.sub_title).toBe('CAGR Calculator')
+
+    const xirrCalculatorRoute = CALCULATORS_FEATURES.find((route) => route.href === '/xirr-calculator')
+    expect(xirrCalculatorRoute).toBeTruthy()
+    expect(xirrCalculatorRoute!.sub_title).toBe('XIRR Calculator')
   })
 })
 
@@ -83,5 +87,9 @@ describe('CALCULATOR_ROUTES', () => {
     const cagrCalculatorRoute = CALCULATOR_ROUTES.find((route) => route.path === '/cagr-calculator')
     expect(cagrCalculatorRoute).toBeTruthy()
     expect(cagrCalculatorRoute!.label).toBe('CAGR Calculator')
+
+    const xirrCalculatorRoute = CALCULATOR_ROUTES.find((route) => route.path === '/xirr-calculator')
+    expect(xirrCalculatorRoute).toBeTruthy()
+    expect(xirrCalculatorRoute!.label).toBe('XIRR Calculator')
   })
 })

@@ -1,5 +1,9 @@
 import { round } from 'lodash'
 
+interface CashFlow {
+  amount: number
+  when: Date
+}
 export function calculateSip(monthlyAmount: number, durationInvestment: number, rateReturn: number) {
   const months = durationInvestment * 12
   const rateMonth = rateReturn / 100 / 12
@@ -93,6 +97,45 @@ export function calculateEmi(
       repayment_table: repaymentTable,
     }
   }
+}
+
+export const calculateXIRR = (cashFlows: CashFlow[], guess: number = 1): { xirr: number; totalDays: number } => {
+  // Function to calculate the absolute value of the XIRR equation
+  const absoluteValue = (rate: number): number => {
+    return cashFlows.reduce((acc, flow) => {
+      const days = (flow.when.getTime() - cashFlows[0].when.getTime()) / (1000 * 60 * 60 * 24)
+      return acc + flow.amount / Math.pow(1 + rate, days / 365)
+    }, 0)
+  }
+
+  // Function to calculate the derivative of the XIRR equation
+  const derivativeValue = (rate: number): number => {
+    return cashFlows.reduce((acc, flow) => {
+      const days = (flow.when.getTime() - cashFlows[0].when.getTime()) / (1000 * 60 * 60 * 24)
+      return acc - (flow.amount * days) / 365 / Math.pow(1 + rate, days / 365 + 1)
+    }, 0)
+  }
+
+  let rate = guess
+  let absolute = absoluteValue(rate)
+  let count = 0
+  const maxIterations = 10000
+
+  // Newton-Raphson iteration loop
+  while (Math.abs(absolute) > 0.00001 && count < maxIterations) {
+    rate = rate - absolute / derivativeValue(rate)
+    absolute = absoluteValue(rate)
+    count++
+  }
+
+  if (count >= maxIterations) {
+    // Handling non-convergence by returning a default value
+    return { xirr: NaN, totalDays: NaN }
+  }
+
+  const totalDays =
+    (cashFlows[cashFlows.length - 1].when.getTime() - cashFlows[0].when.getTime()) / (1000 * 60 * 60 * 24)
+  return { xirr: round(rate * 100, 2), totalDays }
 }
 
 export function calculateAssetsForEmi(loanPrincipal: number, totalInterestPayable: string) {

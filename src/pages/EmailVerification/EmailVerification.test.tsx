@@ -13,7 +13,10 @@ jest.mock('axios', () => ({
 const mockSetIsEmailVerifiedDialogOpen = jest.fn()
 
 const Component = (isOpen: any) => (
-  <EmailVerification isEmailVerifiedDialogOpen={isOpen} setIsEmailVerifiedDialogOpen={mockSetIsEmailVerifiedDialogOpen} />
+  <EmailVerification
+    isEmailVerifiedDialogOpen={isOpen}
+    setIsEmailVerifiedDialogOpen={mockSetIsEmailVerifiedDialogOpen}
+  />
 )
 
 describe('EmailVerification Component', () => {
@@ -32,9 +35,7 @@ describe('EmailVerification Component', () => {
   })
 
   it('should call handleRemindMeLater function when Remind me later button is clicked', async () => {
-    const { getByText } = renderWithClient(
-      <Component isOpen={true} />
-    )
+    const { getByText } = renderWithClient(<Component isOpen={true} />)
 
     const remindMeLaterButton = getByText('Remind me later')
     expect(remindMeLaterButton).toBeInTheDocument()

@@ -49,6 +49,9 @@ export default function Footer() {
             <Link to='/emi-calculator' className='hover:underline'>
               EMI Calculator
             </Link>
+            <Link to='/xirr-calculator' className='hover:underline'>
+              XIRR Calculator
+            </Link>
           </div>
         </div>
         <div className='space-y-4'>
