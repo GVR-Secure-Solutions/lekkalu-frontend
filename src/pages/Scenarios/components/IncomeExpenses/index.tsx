@@ -6,7 +6,7 @@ import { capitalize } from 'lodash'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { IncomeStatement } from '@/types/income-statement'
 import { Form } from '@/components/ui/form'
-import { AddIncomeStatementSchema, addIncomeStatementSchema } from '@/schema/income-statement'
+import { AddIncomeStateSchemaForScenario, addIncomeStatementSchemaForScenario } from '@/schema/income-statement'
 import InputFieldsRenderer from '@/components/InputFieldsRenderer/InputFieldsRenderer'
 import { AUTH, INCOME_STATEMENT } from '@/utils/query-keys'
 import { useToast } from '@/components/ui/use-toast'
@@ -18,8 +18,8 @@ type Props = {
   trigger: React.ReactElement
   type: 'INCOME' | 'EXPENSE'
   incomeStatement?: IncomeStatement
-  createMutationFn: (dto: AddIncomeStatementSchema) => Promise<void>
-  updateMutationFn: (id: number, dto: AddIncomeStatementSchema) => Promise<void>
+  createMutationFn: (dto: AddIncomeStateSchemaForScenario) => Promise<void>
+  updateMutationFn: (id: number, dto: AddIncomeStateSchemaForScenario) => Promise<void>
 }
 
 export default function AddOrEditIncomeExpenseForScenario({
@@ -40,11 +40,11 @@ export default function AddOrEditIncomeExpenseForScenario({
     enabled: !!isDialogOpen,
   })
 
-  const form = useForm<AddIncomeStatementSchema>({
-    resolver: zodResolver(addIncomeStatementSchema),
+  const form = useForm<AddIncomeStateSchemaForScenario>({
+    resolver: zodResolver(addIncomeStatementSchemaForScenario),
     defaultValues: {
       name: incomeStatement?.name,
-      amount: incomeStatement?.amount ? Number(incomeStatement.amount) : undefined,
+      amount: incomeStatement?.amount ? Number(incomeStatement.amount).toFixed(2) : '0.00',
       type: incomeStatement?.type ? incomeStatement?.type : undefined,
     },
   })
@@ -65,7 +65,7 @@ export default function AddOrEditIncomeExpenseForScenario({
   })
 
   const updateMutation = useMutation({
-    mutationFn: (dto: AddIncomeStatementSchema) => updateMutationFn(incomeStatement?.id!, dto),
+    mutationFn: (dto: AddIncomeStateSchemaForScenario) => updateMutationFn(incomeStatement?.id!, dto),
     onSuccess: () => {
       qc.invalidateQueries({
         queryKey: [
@@ -75,11 +75,9 @@ export default function AddOrEditIncomeExpenseForScenario({
       setIsDialogOpen(false)
       toast({ title: `${capitalize(type)} updated successfully!` })
     },
-    onError: (err: any) => toast(getErrorMessage(err)),
   })
 
-  const handleAddOrEdit = (values: AddIncomeStatementSchema) => {
-    values.amount = Number(values.amount.toFixed(2))
+  const handleAddOrEdit = (values: AddIncomeStateSchemaForScenario) => {
     if (isEdit) {
       updateMutation.mutate(values)
       return

@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import React, { cloneElement, useState } from 'react'
+import React, { cloneElement, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import dayjs from 'dayjs'
@@ -16,19 +15,17 @@ import { ASSET_INPUTS_FOR_SCENARIO, ASSET_INPUTS_FOR_SCENARIO_ADVANCE } from '@/
 import { SERVER_DATE_FORMAT } from '@/utils/constants'
 import { PhysicalAsset } from '@/types/balance-sheet'
 import { getErrorMessage } from '@/utils/utils'
-import { useAuthContext } from '@/hooks/use-auth'
 import { ImaginaryUser } from '../../context/use-imaginaryAuth'
 import { CollapsibleTrigger, Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 
 type Props = {
   trigger: React.ReactElement
-  asset?: PhysicalAsset
+  asset?: PhysicalAsset & { depreciation_percent_per_year?: string; init_dep?: string }
   editAsset: (id: number, dto: Partial<AddPhysicalAssetSchemaForScenario>) => Promise<PhysicalAsset[]>
   addAsset: (dto: AddPhysicalAssetSchemaForScenario) => Promise<PhysicalAsset[]>
 }
 
 export default function AddOrEditAssetsForScenario({ trigger, asset, addAsset, editAsset }: Props) {
-  const { userData } = useAuthContext()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { data: imag_users } = useQuery<ImaginaryUser>({ queryKey: [AUTH.IMAGINARY_CLIENT] })
   const { data: current_imag_user } = useQuery<string>({ queryKey: [AUTH.CURRENT_IMAGINARY_USER] })
@@ -37,7 +34,7 @@ export default function AddOrEditAssetsForScenario({ trigger, asset, addAsset, e
   const qc = useQueryClient()
   const isEdit = Boolean(asset)
 
-  const form = useForm<AddPhysicalAssetSchemaForScenario>({
+  const form = useForm<AddPhysicalAssetSchemaForScenario & { depreciation_percent_per_year: number }>({
     resolver: zodResolver(addPhysicalAssetSchemaForScenario),
     defaultValues: {
       ...omit(asset, 'id'),
@@ -48,7 +45,8 @@ export default function AddOrEditAssetsForScenario({ trigger, asset, addAsset, e
       tags: [],
       type: 1,
       user: user_id ?? -1,
-      init_dep: asset?.depreciation_percent ? Number(asset?.depreciation_percent) : 1,
+      init_dep: asset?.depreciation_percent ? Math.abs(Number(asset?.init_dep)).toFixed(2) : '0',
+      depreciation_percent: Math.abs(Number(asset?.depreciation_percent_per_year)).toFixed(2),
     },
   })
 
@@ -62,6 +60,14 @@ export default function AddOrEditAssetsForScenario({ trigger, asset, addAsset, e
     onError: (err) => toast(getErrorMessage(err)),
   })
 
+  useEffect(() => {
+    const sell_value: any = form.watch('sell_value')
+    if (isNaN(sell_value)) {
+      form.setValue('sell_value', 0.0)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.watch('sell_value')])
+
   const editPhysicalAssetMutation = useMutation({
     mutationFn: (dto: AddPhysicalAssetSchemaForScenario) => editAsset(asset?.id!, dto),
     onSuccess: () => {
@@ -73,12 +79,15 @@ export default function AddOrEditAssetsForScenario({ trigger, asset, addAsset, e
   })
 
   const handleAddOrEditPhysicalAsset = (values: AddPhysicalAssetSchemaForScenario) => {
-    const valuesToSubmit = {
+    const valuesToSubmit: any = {
       ...values,
       purchase_date: dayjs(values.purchase_date).format(SERVER_DATE_FORMAT),
       sell_date: dayjs(values.sell_date).format(SERVER_DATE_FORMAT),
+      depreciation_percent_per_year: -values.depreciation_percent,
       //   depreciation_frequency: monthsToSeconds(values.months) + yearsToSeconds(values.years),
     }
+
+    delete valuesToSubmit.depreciation_percent
 
     if (typeof asset !== 'undefined') {
       editPhysicalAssetMutation.mutate(valuesToSubmit)

@@ -148,7 +148,7 @@ const ComparisonDetail = () => {
 
   return (
     <Page className='space-y-8'>
-      <div className='flex justify-between'>
+      <div className='relative flex justify-between'>
         {IS_AUTHENTICATED_USER ? (
           <PageTitle
             backUrl={IS_AUTHENTICATED_USER ? '/comparisons' : '/feature/comparisons'}
@@ -159,16 +159,6 @@ const ComparisonDetail = () => {
         ) : (
           <div />
         )}
-        <div>
-          <Button
-            variant={'default'}
-            onClick={handleSimulate}
-            loading={isPending}
-            disabled={!comparison?.scenarios_objects.length}
-          >
-            Simulate
-          </Button>
-        </div>
       </div>
       <h2 className='font-bold'>
         {comparison?.scenarios_objects?.length ? (
@@ -216,6 +206,18 @@ const ComparisonDetail = () => {
         ) : (
           <></>
         )}
+      </div>
+
+      <div className='flex justify-end'>
+        <Button
+          variant={'default'}
+          onClick={handleSimulate}
+          loading={isPending}
+          disabled={!comparison?.scenarios_objects.length}
+        >
+          Simulate
+        </Button>
+        <div className={isPending ? '' : 'ripple'} />
       </div>
 
       {timelineData ? (
