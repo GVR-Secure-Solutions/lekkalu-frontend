@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 import MultipleSelector, { Option } from '../Expenses/MultipleSelector'
 import { toast } from '../ui/use-toast'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 
 // @TODO: Add extraContent prop
 type BaseInput = {
@@ -77,7 +77,7 @@ export default function InputFieldsRenderer({ inputs, control }: Props) {
       case 'number': {
         return (
           <div className='space-y-2'>
-            {input.helpText && input.helpText !== '' ? (
+            {/* {input.helpText && input.helpText !== '' ? (
               <div
                 className={
                   'flex rounded-md items-center gap-2 border px-3 border-input bg-background ring-offset-background focus-visible:ring-2 focus-visible:ring-ring'
@@ -101,16 +101,16 @@ export default function InputFieldsRenderer({ inputs, control }: Props) {
                   <TooltipContent>{input.helpText}</TooltipContent>
                 </Tooltip>
               </div>
-            ) : (
-              <Input
-                type='number'
-                placeholder={input.label}
-                {...field}
-                onChange={(e) => {
-                  field.onChange(e.target?.valueAsNumber)
-                }}
-              />
-            )}
+            ) : ( */}
+            <Input
+              type='number'
+              placeholder={input.label}
+              {...field}
+              onChange={(e) => {
+                field.onChange(e.target?.valueAsNumber)
+              }}
+            />
+            {/* )} */}
             <When truthy={Boolean(input.hasRange)}>
               <Slider
                 defaultValue={[field.value]}
@@ -215,27 +215,31 @@ export default function InputFieldsRenderer({ inputs, control }: Props) {
       control={control}
       name={input.id}
       render={({ field }) => (
-        <FormItem className={input.className} style={input.style}>
-          <FormLabel className='flex items-center'>
-            {input.label}
-            <span className='pl-2'>
-              {input.helpText &&
-                input.helpText !== '' &&
-                ['date', 'select', 'multi-select', 'text'].includes(input.type) && (
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <div className='cursor-pointer'>
-                        <InfoIcon className='w-4 h-4' />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>{input.helpText}</TooltipContent>
-                  </Tooltip>
-                )}
-            </span>
-          </FormLabel>
-          <FormControl>{getFieldInput(input, field)}</FormControl>
-          <FormMessage />
-        </FormItem>
+        <TooltipProvider>
+          <Tooltip>
+            <FormItem className={input.className} style={input.style}>
+              <FormLabel className='flex items-center'>
+                {input.label}
+                <span className='pl-2'>
+                  {input.helpText &&
+                    input.helpText !== '' &&
+                    ['date', 'select', 'multi-select', 'text', 'number'].includes(input.type) && (
+                      <TooltipTrigger asChild>
+                        <div className='cursor-pointer'>
+                          <InfoIcon className='w-4 h-4' />
+                        </div>
+                      </TooltipTrigger>
+                    )}
+                </span>
+              </FormLabel>
+              <FormControl>{getFieldInput(input, field)}</FormControl>
+              <FormMessage />
+            </FormItem>
+            <TooltipContent className='max-w-[300px]' side='right'>
+              {input.helpText}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       )}
     />
   ))

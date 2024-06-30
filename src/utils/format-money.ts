@@ -23,6 +23,6 @@ export const formatIndianMoneyNotation = (num: number | string = '0', fixed: num
     const formattedValue = `${kValue.toFixed(fixed)} K`
     return parsedNum < 0 ? `-${formattedValue}` : formattedValue
   } else {
-    return parsedNum?.toString()
+    return parsedNum.toFixed(fixed)
   }
 }

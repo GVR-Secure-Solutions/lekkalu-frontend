@@ -34,10 +34,10 @@ export default function AssetLiabilitiesChart({ className, style }: Props) {
       return { assetsData: [], liabilitiesData: [] }
     }
 
-    const totalAssetValue = physicalAssetsQ.data.reduce((acc, curr) => (acc += parseFloat(curr.market_value)), 0)
+    const totalAssetValue = physicalAssetsQ.data.reduce((acc, curr) => (acc += parseFloat(curr.purchase_value)), 0)
     const assetsData = physicalAssetsQ.data
       .map((asset) => {
-        const assetValue = parseFloat(asset.market_value)
+        const assetValue = parseFloat(asset.purchase_value)
         return { ...asset, value: assetValue, percentage: round((assetValue * 100) / totalAssetValue, 2) }
       })
       .sort((a, b) => b.percentage - a.percentage)

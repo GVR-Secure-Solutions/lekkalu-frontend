@@ -50,11 +50,11 @@ export default function LiabilitiesTable() {
           {data?.map((liability) => (
             <TableRow key={liability.id}>
               <TableCell>{liability.name}</TableCell>
-              <TableCell>{formatIndianMoneyNotation(liability.balance)}</TableCell>
-              <TableCell>{formatIndianMoneyNotation(liability.principal)}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(Number(liability.balance))}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(Number(liability.principal))}</TableCell>
               <TableCell>{liability.interest_rate}</TableCell>
               <TableCell>{liability.tenure}</TableCell>
-              <TableCell>{formatIndianMoneyNotation(liability.closure_charges)}</TableCell>
+              <TableCell>{formatIndianMoneyNotation(Number(liability.closure_charges))}</TableCell>
               <TableCell>{liability.disbursement_date}</TableCell>
               <TableCell className='space-x-2'>
                 <AddOrEditLiabilityDialog
