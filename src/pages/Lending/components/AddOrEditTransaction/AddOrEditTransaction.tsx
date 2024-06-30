@@ -36,12 +36,10 @@ export default function AddOrEditTransaction({ transaction, trigger }: Props) {
     defaultValues: {
       lending_account: transaction?.lending_account?.toString() || undefined,
       amount: Math.abs(
-        typeof transaction?.amount === 'number'
-          ? transaction.amount
-          : parseFloat(transaction?.amount as string) || 0
+        typeof transaction?.amount === 'number' ? transaction.amount : parseFloat(transaction?.amount as string) || 0,
       ),
       time: transaction?.time ? new Date(transaction.time) : new Date(),
-      payment_method: transaction?.payment_method,
+      payment_method: transaction?.payment_method || undefined,
       reference_no: transaction?.reference_no,
       note: transaction?.note,
       type: (transaction?.amount as number) < 0 ? 'borrow' : 'lend',

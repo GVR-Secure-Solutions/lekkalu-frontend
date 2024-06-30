@@ -13,8 +13,8 @@ export const TRANSACTION_TYPES = [
   { id: 'borrow', value: 'Borrow', label: 'Borrow' },
 ]
 export const PAYMENT_METHODS = [
-  { id: 'upi', value: 'UPI', label: 'UPI' },
-  { id: 'card', value: 'CARD', label: 'Card' },
-  { id: 'cash', value: 'CASH', label: 'Cash' },
-  { id: 'other', value: 'OTHER', label: 'Other' },
+  { id: 'UPI', value: 'UPI', label: 'UPI' },
+  { id: 'Card', value: 'Card', label: 'Card' },
+  { id: 'Cash', value: 'Cash', label: 'Cash' },
+  { id: 'NetBanking', value: 'NetBanking', label: 'NetBanking' },
 ]
