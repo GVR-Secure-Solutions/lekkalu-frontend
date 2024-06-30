@@ -159,17 +159,6 @@ const ComparisonDetail = () => {
         ) : (
           <div />
         )}
-        <div className='fixed top-[75px] right-[20px] z-[20]'>
-          <Button
-            variant={'default'}
-            onClick={handleSimulate}
-            loading={isPending}
-            disabled={!comparison?.scenarios_objects.length}
-          >
-            Simulate
-          </Button>
-          <div className={isPending ? '' : 'ripple'} />
-        </div>
       </div>
       <h2 className='font-bold'>
         {comparison?.scenarios_objects?.length ? (
