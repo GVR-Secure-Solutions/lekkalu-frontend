@@ -26,6 +26,33 @@ export function checkIsExpenseExists(allExpenses: Expense[], newExpense: Pick<Ex
   return isExists
 }
 
+export const getCumSumData = (data: any) => {
+  data.sort((a: any, b: any) => {
+    if (a.year !== b.year) {
+      return b.year - a.year
+    } else {
+      const months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+      ]
+      return months.indexOf(b.month) - months.indexOf(a.month)
+    }
+  })
+
+  const last12MonthsData = data.slice(0, 12)
+  return last12MonthsData
+}
+
 export const EXPENSE_FILE_VALID_COLUMNS = ['amount', 'tags', 'date']
 export function validateFileColumns(columns: string[]) {
   return columns.every((column) => EXPENSE_FILE_VALID_COLUMNS.includes(column.toLowerCase().trim()))

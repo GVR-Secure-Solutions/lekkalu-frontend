@@ -7,6 +7,7 @@ import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { fetchMonthlyExpenses } from '@/queries/expense'
 import { EXPENSES } from '@/utils/query-keys'
 import { formatIndianMoneyNotation } from '@/utils/format-money'
+import { getCumSumData } from '@/utils/expense'
 
 export const CumSumChart = () => {
   const { data, isLoading } = useQuery({ queryKey: [EXPENSES.MONTHLY_EXPENSES], queryFn: fetchMonthlyExpenses })
@@ -57,7 +58,7 @@ export const CumSumChart = () => {
       },
     },
     xaxis: {
-      categories: cumSumData.map((item) => item.month.slice(0, 3)),
+      categories: cumSumData.map((item) => item.month.slice(0, 3) + ' ' + item.year),
       labels: {
         formatter: (value) => value,
       },
@@ -71,7 +72,7 @@ export const CumSumChart = () => {
   const chartSeries: ApexAxisChartSeries | ApexNonAxisChartSeries = [
     {
       name: 'Cum Sum',
-      data: cumSumData.map((item) => item.cum_sum),
+      data: getCumSumData(cumSumData).map((item: any) => item.cum_sum),
     },
   ]
   if (isLoading) {
