@@ -19,3 +19,11 @@ export const emiCalculatorSchema = z.object({
   disbursementDate: z.date(),
   emiDay: z.coerce.number().min(1).max(31),
 })
+
+export const xirrCalculatorSchema = z.object({
+  startDate: z.date(),
+  endDate: z.date(),
+  maturityDate: z.date(),
+  investedAmount: z.coerce.number().min(100).max(10000000),
+  maturityAmount: z.coerce.number().min(100).max(10000000),
+})

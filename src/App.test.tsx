@@ -87,4 +87,5 @@ describe('App', () => {
 
   test('renders sip routes correctly', testRouteRendering('/sip-calculator'))
   test('renders cagr routes correctly', testRouteRendering('/cagr-calculator'))
+  test('renders xirr routes correctly', testRouteRendering('/xirr-calculator'))
 })
