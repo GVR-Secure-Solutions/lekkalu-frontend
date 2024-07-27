@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useState } from 'react'
 import colors from 'tailwindcss/colors'
 import { Link } from 'react-router-dom'
 import { PlusIcon } from 'lucide-react'
@@ -47,24 +47,6 @@ export default function Goals() {
     return +((value / total) * 100).toFixed(2) || 0
   }, [])
 
-  if (isLoading) {
-    return (
-      <Page className='space-y-4'>
-        <div className='flex justify-end'>
-          <Skeleton className='h-10 w-28' />
-        </div>
-
-        <div className='grid sm:grid-cols-2 md:grid-cols-3 gap-4'>
-          <Skeleton className='h-60 w-full' />
-          <Skeleton className='h-60 w-full' />
-          <Skeleton className='h-60 w-full' />
-        </div>
-
-        <Skeleton className='h-10 w-1/2' />
-      </Page>
-    )
-  }
-
   return (
     <Page className='space-y-4'>
       <div className='flex justify-end'>
@@ -74,29 +56,40 @@ export default function Goals() {
         </Link>
       </div>
 
-      <div className='grid sm:grid-cols-2 md:grid-cols-3 gap-4'>
-        <ProgressChart
-          title='On Track'
-          color={colors.indigo['500']}
-          value={getPercentage(goalStatus?.onTrack, goalStatus?.total)}
-          unit='%'
-        />
-        <ProgressChart
-          title='Off Track'
-          color={colors.red['500']}
-          value={getPercentage(goalStatus?.offTrack, goalStatus?.total)}
-          unit='%'
-        />
-        <ProgressChart
-          title='Completed'
-          color={colors.green['500']}
-          value={getPercentage(goalStatus?.completed, goalStatus?.total)}
-          unit='%'
-        />
-      </div>
+      {isLoading ? (
+        <>
+          <div className='grid sm:grid-cols-2 md:grid-cols-3 gap-4'>
+            <Skeleton className='h-60 w-full' />
+            <Skeleton className='h-60 w-full' />
+            <Skeleton className='h-60 w-full' />
+          </div>
+
+          <Skeleton className='h-10 w-1/2' />
+        </>
+      ) : (
+        <div className='grid sm:grid-cols-2 md:grid-cols-3 gap-4'>
+          <ProgressChart
+            title='On Track'
+            color={colors.indigo['500']}
+            value={getPercentage(goalStatus?.onTrack, goalStatus?.total)}
+            unit='%'
+          />
+          <ProgressChart
+            title='Off Track'
+            color={colors.red['500']}
+            value={getPercentage(goalStatus?.offTrack, goalStatus?.total)}
+            unit='%'
+          />
+          <ProgressChart
+            title='Completed'
+            color={colors.green['500']}
+            value={getPercentage(goalStatus?.completed, goalStatus?.total)}
+            unit='%'
+          />
+        </div>
+      )}
 
       <div className='text-2xl font-bold truncate block py-4'>Your ongoing financial goals</div>
-
       {isFetching ? (
         <div className='grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full'>
           {range(8).map((i) => (
@@ -107,15 +100,16 @@ export default function Goals() {
         <div className='grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-10'>
           {data?.length ? (
             data?.map((goal) => (
-              <Goal
-                key={goal.id}
-                id={goal.id}
-                goalTitle={goal.name}
-                category={goal.track_kpi}
-                createdAt={dayjs(goal.created_at).toISOString()}
-                color={goal?.reachable_by_days > 0 ? colors.violet['500'] : colors.red['500']}
-                reachable_by_days={goal?.reachable_by_days}
-              />
+              <Suspense key={goal.id} fallback={<Skeleton className='h-64 w-full' />}>
+                <Goal
+                  id={goal.id}
+                  goalTitle={goal.name}
+                  category={goal.track_kpi}
+                  createdAt={dayjs(goal.created_at).toISOString()}
+                  color={goal?.reachable_by_days > 0 ? colors.violet['500'] : colors.red['500']}
+                  reachable_by_days={goal?.reachable_by_days}
+                />
+              </Suspense>
             ))
           ) : (
             <div>
