@@ -1,16 +1,18 @@
 import React from 'react'
 import { MoreVertical } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import DeleteGoal from './DeleteGoal'
 import { Button } from '@/components/ui/button'
+import { Goal } from '@/types/goals'
+import { EditGoalDialog } from './EditGoalDialog'
 
 type GoalOptionsType = {
   id: number
   handleAllowRename: () => void
+  goal: Goal
 }
 
-const GoalOptions = ({ id, handleAllowRename }: GoalOptionsType) => {
+const GoalOptions = ({ id, handleAllowRename, goal }: GoalOptionsType) => {
   return (
     <div className='flex w-full justify-end gap-x-2'>
       <Popover>
@@ -21,12 +23,7 @@ const GoalOptions = ({ id, handleAllowRename }: GoalOptionsType) => {
         </PopoverTrigger>
         <PopoverContent className='w-[200px]'>
           <div className='flex flex-col'>
-            <Link
-              to={`/goals/edit/${id}`}
-              className='w-full hover:bg-accent flex justify-center p-2 rounded-lg text-sm font-medium'
-            >
-              Edit
-            </Link>
+            <EditGoalDialog goalId={id} goal={goal} />
             <DeleteGoal id={id} />
             <Button
               className='w-full bg-transparent hover:bg-accent flex justify-center p-2 rounded-lg text-sm font-medium text-black'
