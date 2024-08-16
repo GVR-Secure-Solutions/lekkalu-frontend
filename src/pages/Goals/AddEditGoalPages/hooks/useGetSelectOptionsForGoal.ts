@@ -35,6 +35,8 @@ const useGetSelectOptionsForGoal = () => {
     }
   }, [hasFetchedCustomKpis, hasFetchedUserCustomKpis, hasFetchedGoalProportionality, hasFetchedIncomeExpenses, hasFetchedTargetKpi])
 
+  const totalExpenses = incomeExpenses?.reduce((acc, curr) => (acc += Number(curr.amount)), 0)
+
   return {
     custom_kpis,
     user_custom_kpis,
@@ -42,6 +44,7 @@ const useGetSelectOptionsForGoal = () => {
     goalProportionality,
     getTargetKpi,
     isFetchingOptions,
+    totalExpenses,
   }
 }
 
