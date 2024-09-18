@@ -27,6 +27,7 @@ const config = {
   },
   rules: {
     'spaced-comment': 'off',
+    // 'spaced-comment': 'off',
     //   ['error', 'always', {
     //   'block': {
     //     'balanced': true,

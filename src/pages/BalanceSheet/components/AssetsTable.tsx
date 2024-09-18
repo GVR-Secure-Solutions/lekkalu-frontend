@@ -4,11 +4,11 @@ import { LoaderIcon, PencilIcon, PlusIcon } from 'lucide-react'
 import { BALANCE_SHEET } from '@/utils/query-keys'
 import { fetchPhysicalAssets } from '@/queries/balance-sheet'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import AddOrEditAssetDialog from './AddOrEditAssetDialog'
 import { Button } from '@/components/ui/button'
 import When from '@/components/When/When'
 import DeleteAssetDialog from './DeleteAssetDialog'
 import { formatIndianMoneyNotation } from '@/utils/format-money'
+import AddOrEditAssetDialog1 from '@/pages/BalanceSheet/components/AddOrEditAssetDialog1'
 
 export default function AssetsTable() {
   const { data, isFetching } = useQuery({ queryKey: [BALANCE_SHEET.ASSETS], queryFn: fetchPhysicalAssets })
@@ -16,7 +16,15 @@ export default function AssetsTable() {
   return (
     <div className='space-y-2'>
       <div className='flex justify-end'>
-        <AddOrEditAssetDialog
+        {/*<AddOrEditAssetDialog*/}
+        {/*  trigger={*/}
+        {/*    <Button>*/}
+        {/*      <PlusIcon className='mr-2 w-4 h-4' />*/}
+        {/*      <span>Add Asset</span>*/}
+        {/*    </Button>*/}
+        {/*  }*/}
+        {/*/>*/}
+        <AddOrEditAssetDialog1
           trigger={
             <Button>
               <PlusIcon className='mr-2 w-4 h-4' />
@@ -51,7 +59,7 @@ export default function AssetsTable() {
               <TableCell>{formatIndianMoneyNotation(asset.purchase_value)}</TableCell>
               <TableCell>{formatIndianMoneyNotation(asset.sell_value ?? 0)}</TableCell>
               <TableCell className='space-x-2'>
-                <AddOrEditAssetDialog
+                <AddOrEditAssetDialog1
                   trigger={
                     <Button size='sm' variant='outline'>
                       <PencilIcon className='w-4 h-5' />
