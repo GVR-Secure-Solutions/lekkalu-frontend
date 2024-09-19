@@ -8,6 +8,7 @@ interface GenericFieldProps<T extends FieldValues> {
   register: UseFormRegister<T>
   className?: string // Accept custom className as a prop
   placeholder?: string
+  valueAsNumber?: boolean
 }
 
 // Generic component for rendering a field
@@ -17,16 +18,15 @@ const GenericFormField = <T extends FieldValues>({
   register,
   className = '', // default to an empty string for className
   placeholder = '', // default to an empty string for placeholder
+  valueAsNumber = false, // default to false for valueAsNumber
 }: GenericFieldProps<T>) => {
   return (
-    <>
-      <input
-        placeholder={placeholder}
-        {...register(name)}
-        type={type}
-        className={className} // Apply custom styles
-      />
-    </>
+    <input
+      placeholder={placeholder}
+      {...register(name, { valueAsNumber: valueAsNumber })}
+      type={type}
+      className={className} // Apply custom styles
+    />
   )
 }
 

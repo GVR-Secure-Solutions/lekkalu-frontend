@@ -12,8 +12,8 @@ type Props = {
 }
 // Field Container component that takes children fields and renders them in a row
 const FieldContainer = ({ children }: { children: React.ReactNode }) => (
-  <div className='w-full p-[5px] bg-[#154181]/20 rounded-[5px] justify-between items-center inline-flex'>
-    <div className='w-full flex-col justify-start items-start  inline-flex'>{children}</div>
+  <div className='w-full p-[5px] bg-[#154181]/20 rounded-[5px] justify-start items-start flex-col inline-flex'>
+    {children}
   </div>
 )
 type FieldProps = {
@@ -24,7 +24,7 @@ type FieldProps = {
 }
 // Field component that takes the field body as child, text as label to render a field
 const Field: React.FC<FieldProps> = ({ label, children, error }) => (
-  <>
+  <div className='flex flex-col h-full w-full'>
     <div className='flex justify-between w-full gap-10'>
       <div className='self-stretch text-black/50 text-base leading-snug whitespace-nowrap flex items-center justify-center'>
         <p className='font-normal font-["Charter"]'>{label}</p>
@@ -32,7 +32,7 @@ const Field: React.FC<FieldProps> = ({ label, children, error }) => (
       <div className='justify-start items-center gap-[5px] inline-flex'>{children}</div>
     </div>
     {error && <p className='text-destructive text-md text-right'>{error.message}</p>}
-  </>
+  </div>
 )
 const SaveButton = () => (
   <div className='w-[59px] h-[21px] px-[5px] bg-[#154181] rounded-[5px] justify-center items-center gap-2.5 flex'>
@@ -61,8 +61,8 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
   // Define the Zod schema for form validation
   const formSchema = z.object({
     asset_name: z.string(),
-    buy_price: z.string().transform((value) => parseFloat(value)),
-    expected_returns: z.string().transform((value) => parseFloat(value)),
+    buy_price: z.number().min(1),
+    expected_returns: z.number(),
   })
   // Infer the TypeScript types from the Zod schema
   type FormData = z.infer<typeof formSchema>
@@ -80,7 +80,7 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
     console.log(data)
   }
   const onCancel = () => {
-    clearErrors()
+    setIsDialogOpen(false)
   }
   useEffect(() => {
     const root = document.documentElement
@@ -124,9 +124,10 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
                   <div className='w-[12.50px] h-[12.50px] relative' />
                 </div>
               </div>
-              <input
-                type='text'
-                placeholder='Asset Name'
+              <GenericFormField
+                name={'asset_name'}
+                register={register}
+                placeholder={'Asset Name'}
                 className="w-full bg-inherit self-stretch text-black/25 text-4xl font-normal font-['Charter'] leading-9
               focus:outline-none"
               />
@@ -145,15 +146,15 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
                 <Field label='At Price' error={errors.buy_price} field_name='buy_price'>
                   <div className='justify-start items-center gap-[5px] inline-flex'>
                     <GenericFormField
-                      type={'number'}
+                      type='number'
                       placeholder='40,00,000'
                       register={register}
+                      valueAsNumber={true}
                       name='buy_price'
                       className="bg-inherit text-black font-normal font-['Charter'] leading-snug focus:outline-none
                       text-right min-w-10 max-w-20"
                     />
                     <IndianRupee className='mr-2 h-4 w-4' />
-                    {/*Error Message*/}
                   </div>
                 </Field>
               </FieldContainer>
@@ -161,9 +162,10 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
                 <Field label='Expected Returns' error={errors.expected_returns} field_name={'expected_returns'}>
                   <div className='justify-start items-center gap-[5px] inline-flex'>
                     <GenericFormField
-                      type={'number'}
+                      type='number'
                       name='expected_returns'
                       register={register}
+                      valueAsNumber={true}
                       placeholder='4'
                       className="bg-inherit text-black font-normal font-[' Charter'] leading-snug focus:outline-none
                       text-right
