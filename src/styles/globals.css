@@ -108,7 +108,7 @@ html {
 @layer base {
     * {
         @apply border-border;
-        font-family: 'Poppins', sans-serif;
+        font-family: 'charter', sans-serif;
     }
 
     body {

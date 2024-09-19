@@ -2,9 +2,10 @@ import React, { cloneElement, useEffect, useState } from 'react'
 import { IndianRupee, Percent } from 'lucide-react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { FieldError, SubmitHandler, useForm } from 'react-hook-form'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog-v1'
 import DatePickerV1 from '@/components/DatePicker/DatePickerV1'
+import GenericFormField from '@/components/ui/form-v1'
 
 type Props = {
   trigger: React.ReactElement
@@ -15,23 +16,41 @@ const FieldContainer = ({ children }: { children: React.ReactNode }) => (
     <div className='w-full flex-col justify-start items-start  inline-flex'>{children}</div>
   </div>
 )
+type FieldProps = {
+  label: string
+  children: React.ReactNode
+  error?: FieldError
+  field_name?: string
+}
 // Field component that takes the field body as child, text as label to render a field
-const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className='flex justify-between w-full gap-10'>
-    <div className='self-stretch text-black/50 text-base leading-snug whitespace-nowrap flex items-center justify-center'>
-      <p className='font-normal font-["Charter"]'>{label}</p>
+const Field: React.FC<FieldProps> = ({ label, children, error }) => (
+  <>
+    <div className='flex justify-between w-full gap-10'>
+      <div className='self-stretch text-black/50 text-base leading-snug whitespace-nowrap flex items-center justify-center'>
+        <p className='font-normal font-["Charter"]'>{label}</p>
+      </div>
+      <div className='justify-start items-center gap-[5px] inline-flex'>{children}</div>
     </div>
-    <div className='justify-start items-center gap-[5px] inline-flex'>{children}</div>
-  </div>
+    {error && <p className='text-destructive text-md text-right'>{error.message}</p>}
+  </>
 )
 const SaveButton = () => (
   <div className='w-[59px] h-[21px] px-[5px] bg-[#154181] rounded-[5px] justify-center items-center gap-2.5 flex'>
-    <button className="text-white text-[13px] font-normal font-['Charter']">Save</button>
+    <button type='submit' className="text-white text-[13px] font-normal font-['Charter']">
+      Save
+    </button>
   </div>
 )
-const CancelButton = () => (
+
+interface CancelButtonProps {
+  clickHandler: () => void
+}
+
+const CancelButton: React.FC<CancelButtonProps> = ({ clickHandler }) => (
   <div className='w-[59px] h-[21px] px-[5px] bg-[#154181]/20 rounded-[5px] justify-center items-center gap-2.5 flex'>
-    <button className="text-black text-[13px] font-normal font-['Charter']">Cancel</button>
+    <button className="text-black text-[13px] font-normal font-['Charter']" onClick={clickHandler}>
+      Cancel
+    </button>
   </div>
 )
 
@@ -41,8 +60,9 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
 
   // Define the Zod schema for form validation
   const formSchema = z.object({
-    assetName: z.string().min(1, 'Asset name is required'),
-    expected_returns: z.number(),
+    asset_name: z.string(),
+    buy_price: z.string().transform((value) => parseFloat(value)),
+    expected_returns: z.string().transform((value) => parseFloat(value)),
   })
   // Infer the TypeScript types from the Zod schema
   type FormData = z.infer<typeof formSchema>
@@ -50,6 +70,7 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
     register,
     handleSubmit,
     formState: { errors },
+    clearErrors,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   })
@@ -57,6 +78,9 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
   // This function will be executed when the form is successfully submitted
   const onSubmit: SubmitHandler<FormData> = (data) => {
     console.log(data)
+  }
+  const onCancel = () => {
+    clearErrors()
   }
   useEffect(() => {
     const root = document.documentElement
@@ -68,6 +92,9 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
       root.classList.remove('light')
     }
   }, [theme])
+  useEffect(() => {
+    clearErrors()
+  }, [isDialogOpen])
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -89,7 +116,6 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
                 returns to gauge your total financial performance over past and future
               </div>
             </div>
-            {/*Fields Container*/}
             <div className='flex-col justify-start items-start gap-[31px] inline-flex'>
               <div className='px-2.5 py-[5px] bg-[#c6ddff] rounded-[5px] justify-center items-center gap-2.5 inline-flex'>
                 <div className='w-[15px] h-[15px] relative' />
@@ -100,12 +126,10 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
               </div>
               <input
                 type='text'
-                {...register('assetName')}
                 placeholder='Asset Name'
                 className="w-full bg-inherit self-stretch text-black/25 text-4xl font-normal font-['Charter'] leading-9
               focus:outline-none"
               />
-              {errors.assetName && <p>{errors.assetName.message}</p>}
               {/*Container of Essential Fields*/}
               <FieldContainer>
                 {/*Bought Date Field*/}
@@ -118,36 +142,39 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
                   </div>
                 </Field>
                 {/*Bought Price Field*/}
-                <Field label='At Price'>
+                <Field label='At Price' error={errors.buy_price} field_name='buy_price'>
                   <div className='justify-start items-center gap-[5px] inline-flex'>
-                    <input
+                    <GenericFormField
+                      type={'number'}
                       placeholder='40,00,000'
-                      className="bg-inherit text-black  font-normal font-['Charter'] leading-snug focus:outline-none
-                    text-right
-                    min-w-10 max-w-20"
+                      register={register}
+                      name='buy_price'
+                      className="bg-inherit text-black font-normal font-['Charter'] leading-snug focus:outline-none
+                      text-right min-w-10 max-w-20"
                     />
                     <IndianRupee className='mr-2 h-4 w-4' />
+                    {/*Error Message*/}
                   </div>
                 </Field>
               </FieldContainer>
               <FieldContainer>
-                <Field label='Expected Returns'>
+                <Field label='Expected Returns' error={errors.expected_returns} field_name={'expected_returns'}>
                   <div className='justify-start items-center gap-[5px] inline-flex'>
-                    <input
-                      type='number'
-                      {...register('expected_returns')}
+                    <GenericFormField
+                      type={'number'}
+                      name='expected_returns'
+                      register={register}
                       placeholder='4'
-                      className="bg-inherit text-black font-normal font-['Charter'] leading-snug focus:outline-none
-                    text-right
-                    min-w-10 max-w-20"
+                      className="bg-inherit text-black font-normal font-[' Charter'] leading-snug focus:outline-none
+                      text-right
+                      min-w-10 max-w-20"
                     />
                     <Percent className='mr-2 h-4 w-4' />
-                    {errors.expected_returns && <p>{errors.expected_returns.message}</p>}
                   </div>
                 </Field>
               </FieldContainer>
               <div className='self-stretch justify-between items-start inline-flex'>
-                <CancelButton />
+                <CancelButton clickHandler={onCancel} />
                 <SaveButton />
               </div>
             </div>
