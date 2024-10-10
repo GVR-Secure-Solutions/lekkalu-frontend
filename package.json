@@ -2,6 +2,7 @@
   "name": "finuncle-app",
   "version": "0.1.11",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@craco/craco": "^7.1.0",
     "@headlessui/react": "^2.1.2",
@@ -40,6 +41,9 @@
     "dayjs": "^1.11.12",
     "env-cmd": "^10.1.0",
     "eslint-plugin-jest": "^28.6.0",
+    "graphql": "^16.9.0",
+    "graphql-request": "^7.1.0",
+    "graphql-tag": "^2.12.6",
     "heroicons": "^2.1.5",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",

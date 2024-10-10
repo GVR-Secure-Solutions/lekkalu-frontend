@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { QueryClient } from '@tanstack/react-query'
+import { GraphQLClient } from 'graphql-request'
+import { HTTPMethodInput } from 'node_modules/graphql-request/build/legacy/helpers/types'
 import { getCookie } from './cookie'
 
 const BASIC_HEADER = {
@@ -102,3 +104,14 @@ registrationClient?.interceptors.request.use((config) => {
 })
 
 export const queryClient = new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false } } })
+
+export function getGraphQLClient(method: HTTPMethodInput) {
+  const graphqlClient = new GraphQLClient(process.env.REACT_APP_GRAPHQL_URL as unknown as string, {
+    headers: {
+      Authorization: `Bearer ${getCookie('access')}`,
+    },
+    method,
+    excludeOperationName: true,
+  })
+  return graphqlClient
+}
