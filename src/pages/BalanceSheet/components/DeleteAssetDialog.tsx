@@ -9,10 +9,11 @@ import { useToast } from '@/components/ui/use-toast'
 import { getErrorMessage } from '@/utils/utils'
 
 type Props = {
-  id: number
+  id: number[]
+  forMultiple?: boolean
 }
 
-export default function DeleteAssetDialog({ id }: Props) {
+export default function DeleteAssetDialog({ id, forMultiple }: Props) {
   const qc = useQueryClient()
   const { toast } = useToast()
 
@@ -28,18 +29,28 @@ export default function DeleteAssetDialog({ id }: Props) {
   return (
     <Alert
       trigger={
-        <Button size='sm' variant='ghost'>
-          <TrashIcon className='w-4 h-4 text-red-500' />
+        <Button
+          size={forMultiple ? 'default' : 'sm'}
+          variant={forMultiple ? 'default' : 'ghost'}
+          className={forMultiple ? 'ml-5 bg-red-500 hover:bg-red-400' : ''}
+        >
+          <TrashIcon className={`w-4 h-4 ${forMultiple ? 'text-white' : 'text-red-500'}`} />
         </Button>
       }
       title='Delete Asset'
-      description='Are you sure you want to delete this asset ?'
+      description={
+        forMultiple ? 'Are you sure you want to delete selected assets?' : 'Are you sure you want to delete this asset?'
+      }
       okText='Yes, Delete'
       okButtonProps={{ disabled: deleteAssetMutation.isPending, className: 'bg-red-500 hover:bg-red-400' }}
       cancelText='No'
       cancelProps={{ disabled: deleteAssetMutation.isPending }}
       onOk={() => {
-        deleteAssetMutation.mutate(id)
+        if (id.length > 1) {
+          console.log('how to handle this? Ask backend!!')
+          return
+        }
+        deleteAssetMutation.mutate(id[0])
       }}
     />
   )
