@@ -2,38 +2,15 @@ import React, { cloneElement, useEffect, useState } from 'react'
 import { IndianRupee, Percent } from 'lucide-react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FieldError, SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog-v1'
 import DatePickerV1 from '@/components/DatePicker/DatePickerV1'
-import GenericFormField from '@/components/ui/form-v1'
+import GenericFormField, { DetailField, Field, FieldContainer } from '@/components/ui/form-v1'
+import logger from '@/logger'
 
 type Props = {
   trigger: React.ReactElement
 }
-// Field Container component that takes children fields and renders them in a row
-const FieldContainer = ({ children }: { children: React.ReactNode }) => (
-  <div className='w-full p-[5px] bg-[#154181]/20 rounded-[5px] justify-start items-start flex-col inline-flex'>
-    {children}
-  </div>
-)
-type FieldProps = {
-  label: string
-  children: React.ReactNode
-  error?: FieldError
-  field_name?: string
-}
-// Field component that takes the field body as child, text as label to render a field
-const Field: React.FC<FieldProps> = ({ label, children, error }) => (
-  <div className='flex flex-col h-full w-full'>
-    <div className='flex justify-between w-full gap-10'>
-      <div className='self-stretch text-black/50 text-base leading-snug whitespace-nowrap flex items-center justify-center'>
-        <p className='font-normal font-["Charter"]'>{label}</p>
-      </div>
-      <div className='justify-start items-center gap-[5px] inline-flex'>{children}</div>
-    </div>
-    {error && <p className='text-destructive text-md text-right'>{error.message}</p>}
-  </div>
-)
 const SaveButton = () => (
   <div className='w-[59px] h-[21px] px-[5px] bg-[#154181] rounded-[5px] justify-center items-center gap-2.5 flex'>
     <button type='submit' className="text-white text-[13px] font-normal font-['Charter']">
@@ -60,7 +37,7 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
 
   // Define the Zod schema for form validation
   const formSchema = z.object({
-    asset_name: z.string(),
+    asset_name: z.string().min(1, { message: 'Name must have at least one character' }),
     buy_price: z.number().min(1),
     expected_returns: z.number(),
   })
@@ -77,7 +54,7 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
 
   // This function will be executed when the form is successfully submitted
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    console.log(data)
+    logger.info(data)
   }
   const onCancel = () => {
     setIsDialogOpen(false)
@@ -124,26 +101,28 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
                   <div className='w-[12.50px] h-[12.50px] relative' />
                 </div>
               </div>
-              <GenericFormField
-                name={'asset_name'}
-                register={register}
-                placeholder={'Asset Name'}
-                className="w-full bg-inherit self-stretch text-black/25 text-4xl font-normal font-['Charter'] leading-9
+              <Field error={errors.asset_name}>
+                <GenericFormField
+                  name={'asset_name'}
+                  register={register}
+                  placeholder={'Asset Name'}
+                  className="w-full bg-inherit self-stretch text-black/25 text-4xl font-normal font-['Charter'] leading-9
               focus:outline-none"
-              />
+                />
+              </Field>
               {/*Container of Essential Fields*/}
               <FieldContainer>
                 {/*Bought Date Field*/}
-                <Field label='Bought on'>
+                <DetailField label='Bought on'>
                   <div className='justify-start items-center gap-[5px]  inline-flex'>
                     <div className="text-black text-base font-normal font-['Charter'] leading-snug whitespace-nowrap ">
                       Sun, 14 Jul
                     </div>
                     <DatePickerV1 className='mr-2 h-4 w-4' />
                   </div>
-                </Field>
+                </DetailField>
                 {/*Bought Price Field*/}
-                <Field label='At Price' error={errors.buy_price} field_name='buy_price'>
+                <DetailField label='At Price' error={errors.buy_price} field_name='buy_price'>
                   <div className='justify-start items-center gap-[5px] inline-flex'>
                     <GenericFormField
                       type='number'
@@ -156,10 +135,10 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
                     />
                     <IndianRupee className='mr-2 h-4 w-4' />
                   </div>
-                </Field>
+                </DetailField>
               </FieldContainer>
               <FieldContainer>
-                <Field label='Expected Returns' error={errors.expected_returns} field_name={'expected_returns'}>
+                <DetailField label='Expected Returns' error={errors.expected_returns} field_name={'expected_returns'}>
                   <div className='justify-start items-center gap-[5px] inline-flex'>
                     <GenericFormField
                       type='number'
@@ -173,7 +152,7 @@ export default function AddOrEditAssetDialogV1({ trigger }: Props) {
                     />
                     <Percent className='mr-2 h-4 w-4' />
                   </div>
-                </Field>
+                </DetailField>
               </FieldContainer>
               <div className='self-stretch justify-between items-start inline-flex'>
                 <CancelButton clickHandler={onCancel} />
